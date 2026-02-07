@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Challenge - English Games Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .target-text {
+            font-size: 1.5rem;
+            line-height: 2;
+            color: var(--text-primary);
+            padding: 2rem;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: var(--border-radius-md);
+            border-left: 4px solid var(--color-primary);
+            margin-bottom: 2rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .typing-input {
+            width: 100%;
+            padding: 1.5rem;
+            font-size: 1.25rem;
+            font-family: 'Courier New', monospace;
+            border: 3px solid var(--color-primary);
+            border-radius: var(--border-radius-md);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .typing-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+        }
+
+        .char-correct {
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .char-incorrect {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .stat-card {
+            background: var(--gradient-card);
+            padding: 1.5rem;
+            border-radius: var(--border-radius-md);
+            text-align: center;
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="animated-bg">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
+    <nav class="nav-container">
+        <div class="nav-content">
+            <a href="../index.html" class="nav-logo">🎮 Back to Hub</a>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <div class="theme-toggle-slider">🌙</div>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section class="section" style="padding-top: 3rem;">
+            <div class="glass-card" style="padding: 3rem; max-width: 900px; margin: 0 auto;">
+                <h1
+                    style="font-size: 2.5rem; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem; text-align: center;">
+                    ⌨️ Typing Challenge
+                </h1>
+                <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+                    Type the English sentences as fast and accurately as you can!
+                </p>
+
+                <!-- Stats Dashboard -->
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value" id="wpmDisplay">0</div>
+                        <div class="stat-label">WPM</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="accuracyDisplay">100%</div>
+                        <div class="stat-label">Accuracy</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="timerDisplay">60</div>
+                        <div class="stat-label">Time Left</div>
+                    </div>
+                </div>
+
+                <!-- Game Area -->
+                <div id="gameArea">
+                    <!-- Start Screen -->
+                    <div id="startScreen">
+                        <div style="text-align: center; padding: 2rem;">
+                            <p style="font-size: 1.25rem; color: var(--text-secondary); margin-bottom: 2rem;">
+                                You have 60 seconds to type as many sentences as possible. Are you ready?
+                            </p>
+                            <button onclick="startGame()" class="btn btn-primary"
+                                style="font-size: 1.25rem; padding: 1rem 3rem;">
+                                🚀 Start Challenge
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Typing Area -->
+                    <div id="typingArea" class="hidden">
+                        <div class="target-text" id="targetText"></div>
+                        <textarea id="typingInput" class="typing-input" placeholder="Start typing here..."
+                            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+                    </div>
+
+                    <!-- Result Screen -->
+                    <div id="resultScreen" class="hidden" style="text-align: center; padding: 2rem;">
+                        <div style="font-size: 5rem; margin-bottom: 1rem;">⌨️</div>
+                        <h2 style="font-size: 2rem; margin-bottom: 2rem;">Time's Up!</h2>
+
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                            <div class="stat-card">
+                                <div class="stat-value" id="finalWPM">0</div>
+                                <div class="stat-label">Words Per Minute</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="finalAccuracy">0%</div>
+                                <div class="stat-label">Accuracy</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="finalScore">0</div>
+                                <div class="stat-label">Final Score</div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                            <button onclick="resetGame()" class="btn btn-primary">
+                                🔄 Try Again
+                            </button>
+                            <button onclick="window.location.href='../index.html'" class="btn btn-success">
+                                🏠 Back to Hub
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="../js/storage.js"></script>
+    <script src="../js/achievements.js"></script>
+    <script>
+        const sentences = [
+            "The early bird catches the worm.",
+            "Practice makes perfect.",
+            "Time flies when you're having fun.",
+            "Actions speak louder than words.",
+            "Every cloud has a silver lining.",
+            "Better late than never.",
+            "Don't judge a book by its cover.",
+            "The pen is mightier than the sword.",
+            "You can't have your cake and eat it too.",
+            "When in Rome, do as the Romans do.",
+            "A picture is worth a thousand words.",
+            "Good things come to those who wait.",
+            "Knowledge is power.",
+            "The best things in life are free.",
+            "Honesty is the best policy."
+        ];
+
+        let currentSentence = '';
+        let startTime = null;
+        let timeLeft = 60;
+        let timerInterval = null;
+        let totalTyped = 0;
+        let correctChars = 0;
+        let currentSentenceIndex = 0;
+
+        // Initialize
+        ThemeManager.init();
+        SoundFX.init();
+
+        function toggleTheme() {
+            const newTheme = ThemeManager.toggle();
+            document.querySelector('.theme-toggle-slider').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            SoundFX.play('click');
+        }
+
+        function startGame() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('typingArea').classList.remove('hidden');
+
+            startTime = Date.now();
+            timeLeft = 60;
+            totalTyped = 0;
+            correctChars = 0;
+            currentSentenceIndex = 0;
+
+            loadNextSentence();
+            startTimer();
+
+            document.getElementById('typingInput').focus();
+            SoundFX.play('click');
+        }
+
+        function loadNextSentence() {
+            currentSentence = sentences[currentSentenceIndex % sentences.length];
+            document.getElementById('targetText').textContent = currentSentence;
+            document.getElementById('typingInput').value = '';
+            currentSentenceIndex++;
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timerDisplay').textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function updateStats() {
+            const typed = document.getElementById('typingInput').value;
+            const targetText = document.getElementById('targetText');
+
+            totalTyped = typed.length;
+            correctChars = 0;
+
+            // Highlight correct/incorrect characters
+            let highlightedText = '';
+            for (let i = 0; i < currentSentence.length; i++) {
+                if (i < typed.length) {
+                    if (typed[i] === currentSentence[i]) {
+                        highlightedText += `<span class="char-correct">${currentSentence[i]}</span>`;
+                        correctChars++;
+                    } else {
+                        highlightedText += `<span class="char-incorrect">${currentSentence[i]}</span>`;
+                    }
+                } else {
+                    highlightedText += currentSentence[i];
+                }
+            }
+            targetText.innerHTML = highlightedText;
+
+            // Check if sentence is complete
+            if (typed === currentSentence) {
+                SoundFX.play('success');
+                setTimeout(() => loadNextSentence(), 300);
+            }
+
+            // Calculate WPM
+            const timeElapsed = (Date.now() - startTime) / 1000 / 60; // in minutes
+            const wordsTyped = totalTyped / 5; // Average word length is 5 characters
+            const wpm = timeElapsed > 0 ? Math.round(wordsTyped / timeElapsed) : 0;
+
+            // Calculate accuracy
+            const accuracy = totalTyped > 0 ? Math.round((correctChars / totalTyped) * 100) : 100;
+
+            document.getElementById('wpmDisplay').textContent = wpm;
+            document.getElementById('accuracyDisplay').textContent = accuracy + '%';
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+
+            const timeElapsed = 60; // Full minute
+            const wordsTyped = totalTyped / 5;
+            const wpm = Math.round(wordsTyped / (timeElapsed / 60));
+            const accuracy = totalTyped > 0 ? Math.round((correctChars / totalTyped) * 100) : 0;
+            const score = Math.round((wpm * accuracy) / 100);
+
+            // Save progress
+            UserProgress.recordGame('typing-challenge', score, timeElapsed);
+
+            // Check achievements
+            Achievements.check(UserProgress.getStats());
+
+            // Show results
+            document.getElementById('typingArea').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            document.getElementById('finalWPM').textContent = wpm;
+            document.getElementById('finalAccuracy').textContent = accuracy + '%';
+            document.getElementById('finalScore').textContent = score;
+
+            if (score > 50) {
+                createConfetti(50);
+            }
+            SoundFX.play('achievement');
+        }
+
+        function resetGame() {
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+            document.getElementById('wpmDisplay').textContent = '0';
+            document.getElementById('accuracyDisplay').textContent = '100%';
+            document.getElementById('timerDisplay').textContent = '60';
+            SoundFX.play('click');
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const typingInput = document.getElementById('typingInput');
+
+            typingInput.addEventListener('input', updateStats);
+
+            // Prevent paste
+            typingInput.addEventListener('paste', (e) => {
+                e.preventDefault();
+                SoundFX.play('error');
+            });
+
+            const currentTheme = ThemeManager.getCurrent();
+            document.querySelector('.theme-toggle-slider').textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        });
+    </script>
+</body>
+
+</html>

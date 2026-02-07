@@ -1,0 +1,8 @@
+<style>
+
+/* Add hover effect for level selector cards */
+.level-selector-card[data-unlocked="true"]:hover {
+    transform: translateX(8px) !important;
+}
+
+</style>

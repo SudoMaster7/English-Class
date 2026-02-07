@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Match - English Games Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            background: var(--gradient-card);
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            box-shadow: var(--shadow-md);
+        }
+
+        .memory-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .memory-card.matched {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            text-align: center;
+            padding: 1rem;
+            border-radius: var(--border-radius-md);
+        }
+
+        .card-front {
+            background: var(--gradient-primary);
+            color: white;
+            font-size: 2rem;
+        }
+
+        .card-back {
+            background: var(--bg-glass);
+            color: var(--text-primary);
+            transform: rotateY(180deg);
+            border: 2px solid var(--border-color);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+        }
+
+        @media (max-width: 600px) {
+            .memory-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.75rem;
+            }
+
+            .card-face {
+                font-size: 1rem;
+                padding: 0.5rem;
+            }
+
+            .card-front {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="animated-bg">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
+    <nav class="nav-container">
+        <div class="nav-content">
+            <a href="../index.html" class="nav-logo">🎮 Back to Hub</a>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <div class="theme-toggle-slider">🌙</div>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section class="section" style="padding-top: 3rem;">
+            <div class="glass-card" style="padding: 2.5rem;">
+                <h1
+                    style="font-size: 2.5rem; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem; text-align: center;">
+                    🃏 Memory Match
+                </h1>
+                <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+                    Match English words with their Portuguese translations!
+                </p>
+
+                <div class="game-header">
+                    <div class="stat-box">
+                        ⏱️ Time: <span id="timer">0:00</span>
+                    </div>
+                    <div class="stat-box">
+                        🔄 Moves: <span id="moves">0</span>
+                    </div>
+                    <div class="stat-box">
+                        ✅ Matches: <span id="matches">0/8</span>
+                    </div>
+                </div>
+
+                <div id="gameBoard" class="memory-grid">
+                    <!-- Cards will be generated here -->
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button onclick="resetGame()" class="btn btn-primary">
+                        🔄 New Game
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Result Modal -->
+        <div id="resultModal" class="hidden"
+            style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-overlay); display: flex; align-items: center; justify-content: center; z-index: 10000;">
+            <div class="glass-card" style="padding: 3rem; text-align: center; max-width: 500px; margin: 1rem;">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
+                <h2 style="font-size: 2rem; margin-bottom: 1rem; color: var(--text-primary);">
+                    Congratulations!
+                </h2>
+                <p style="font-size: 1.25rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    You completed the game in <span id="finalTime">0:00</span> with <span id="finalMoves">0</span>
+                    moves!
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="resetGame()" class="btn btn-primary">
+                        🔄 Play Again
+                    </button>
+                    <button onclick="window.location.href='../index.html'" class="btn btn-success">
+                        🏠 Back to Hub
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/storage.js"></script>
+    <script src="../js/achievements.js"></script>
+    <script>
+        // Vocabulary pairs (8 pairs = 16 cards)
+        const vocabulary = [
+            { english: 'Wake up', portuguese: 'Acordar' },
+            { english: 'Breakfast', portuguese: 'Café da manhã' },
+            { english: 'Brush teeth', portuguese: 'Escovar dentes' },
+            { english: 'Go to work', portuguese: 'Ir trabalhar' },
+            { english: 'Have lunch', portuguese: 'Almoçar' },
+            { english: 'Study', portuguese: 'Estudar' },
+            { english: 'Dinner', portuguese: 'Jantar' },
+            { english: 'Go to bed', portuguese: 'Ir dormir' }
+        ];
+
+        let cards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let moves = 0;
+        let timer = 0;
+        let timerInterval = null;
+        let gameStarted = false;
+
+        // Initialize theme
+        ThemeManager.init();
+        SoundFX.init();
+
+        function toggleTheme() {
+            const newTheme = ThemeManager.toggle();
+            document.querySelector('.theme-toggle-slider').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            SoundFX.play('click');
+        }
+
+        // Initialize game
+        function initGame() {
+            const gameBoard = document.getElementById('gameBoard');
+            gameBoard.innerHTML = '';
+
+            // Create card pairs
+            cards = [];
+            vocabulary.forEach((pair, index) => {
+                cards.push({ id: `en-${index}`, text: pair.english, pairId: index });
+                cards.push({ id: `pt-${index}`, text: pair.portuguese, pairId: index });
+            });
+
+            // Shuffle cards
+            cards = shuffleArray(cards);
+
+            // Render cards
+            cards.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'memory-card';
+                cardElement.dataset.index = index;
+                cardElement.innerHTML = `
+                    <div class="card-face card-front">🎴</div>
+                    <div class="card-face card-back">${card.text}</div>
+                `;
+                cardElement.addEventListener('click', () => flipCard(index));
+                gameBoard.appendChild(cardElement);
+            });
+
+            // Reset game state
+            flippedCards = [];
+            matchedPairs = 0;
+            moves = 0;
+            timer = 0;
+            gameStarted = false;
+
+            updateStats();
+
+            if (timerInterval) clearInterval(timerInterval);
+        }
+
+        // Flip card
+        function flipCard(index) {
+            const cardElement = document.querySelectorAll('.memory-card')[index];
+
+            // Start timer on first click
+            if (!gameStarted) {
+                gameStarted = true;
+                startTimer();
+            }
+
+            // Can't flip if already flipped or matched
+            if (flippedCards.length >= 2 ||
+                cardElement.classList.contains('flipped') ||
+                cardElement.classList.contains('matched')) {
+                return;
+            }
+
+            // Flip card
+            cardElement.classList.add('flipped');
+            flippedCards.push(index);
+            SoundFX.play('click');
+
+            // Check for match when 2 cards are flipped
+            if (flippedCards.length === 2) {
+                moves++;
+                updateStats();
+                setTimeout(checkMatch, 800);
+            }
+        }
+
+        // Check if cards match
+        function checkMatch() {
+            const [index1, index2] = flippedCards;
+            const card1 = cards[index1];
+            const card2 = cards[index2];
+            const cardElements = document.querySelectorAll('.memory-card');
+
+            if (card1.pairId === card2.pairId) {
+                // Match!
+                cardElements[index1].classList.add('matched');
+                cardElements[index2].classList.add('matched');
+                matchedPairs++;
+                SoundFX.play('success');
+
+                updateStats();
+
+                if (matchedPairs === vocabulary.length) {
+                    // Game complete!
+                    setTimeout(() => endGame(), 500);
+                }
+            } else {
+                // No match
+                cardElements[index1].classList.remove('flipped');
+                cardElements[index2].classList.remove('flipped');
+                SoundFX.play('error');
+            }
+
+            flippedCards = [];
+        }
+
+        // Start timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timer++;
+                updateStats();
+            }, 1000);
+        }
+
+        // Update stats display
+        function updateStats() {
+            document.getElementById('timer').textContent = formatTime(timer);
+            document.getElementById('moves').textContent = moves;
+            document.getElementById('matches').textContent = `${matchedPairs}/${vocabulary.length}`;
+        }
+
+        // End game
+        function endGame() {
+            clearInterval(timerInterval);
+
+            // Calculate score (based on time and moves)
+            const baseScore = 100;
+            const timePenalty = Math.floor(timer / 10);
+            const movePenalty = Math.max(0, (moves - vocabulary.length * 2) * 2);
+            const score = Math.max(0, baseScore - timePenalty - movePenalty);
+
+            // Save progress
+            UserProgress.recordGame('memory-match', score, timer);
+
+            // Check achievements
+            const stats = UserProgress.getStats();
+            Achievements.check(stats);
+
+            // Show result modal
+            document.getElementById('finalTime').textContent = formatTime(timer);
+            document.getElementById('finalMoves').textContent = moves;
+            document.getElementById('resultModal').classList.remove('hidden');
+
+            createConfetti(50);
+            SoundFX.play('achievement');
+        }
+
+        // Reset game
+        function resetGame() {
+            document.getElementById('resultModal').classList.add('hidden');
+            if (timerInterval) clearInterval(timerInterval);
+            initGame();
+            SoundFX.play('click');
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            initGame();
+            const currentTheme = ThemeManager.getCurrent();
+            document.querySelector('.theme-toggle-slider').textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Scramble - English Games Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .scramble-word {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--color-primary);
+            letter-spacing: 0.25rem;
+            margin: 2rem 0;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .answer-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 1.25rem;
+            font-size: 1.5rem;
+            text-align: center;
+            border: 3px solid var(--color-primary);
+            border-radius: var(--border-radius-md);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-weight: 600;
+            transition: all var(--transition-base);
+        }
+
+        .answer-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+            transform: scale(1.02);
+        }
+
+        .hint-text {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-top: 1rem;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--gradient-primary);
+            transition: width 0.3s ease;
+        }
+
+        .skip-btn {
+            background: var(--gradient-warning);
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="animated-bg">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
+    <nav class="nav-container">
+        <div class="nav-content">
+            <a href="../index.html" class="nav-logo">🎮 Back to Hub</a>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <div class="theme-toggle-slider">🌙</div>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section class="section" style="padding-top: 3rem;">
+            <div class="glass-card" style="padding: 3rem; max-width: 800px; margin: 0 auto;">
+                <h1
+                    style="font-size: 2.5rem; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem; text-align: center;">
+                    🔤 Word Scramble
+                </h1>
+                <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+                    Unscramble the English words!
+                </p>
+
+                <!-- Progress -->
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <span style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary);">
+                        Question <span id="currentQuestion">1</span> of 10
+                    </span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar" style="width: 10%"></div>
+                </div>
+
+                <!-- Score -->
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-success);">
+                        Score: <span id="score">0</span> / 100
+                    </div>
+                </div>
+
+                <!-- Game Area -->
+                <div id="gameArea" style="text-align: center;">
+                    <div class="scramble-word" id="scrambledWord">OELLH</div>
+
+                    <div style="margin: 2rem 0;">
+                        <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer..."
+                            autocomplete="off">
+                    </div>
+
+                    <p class="hint-text" id="hintText">
+                        💡 Hint: A common greeting
+                    </p>
+
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;">
+                        <button onclick="checkAnswer()" class="btn btn-primary" style="min-width: 150px;">
+                            ✓ Check Answer
+                        </button>
+                        <button onclick="showHint()" class="btn btn-icon" title="Show first letter">
+                            💡
+                        </button>
+                        <button onclick="skipWord()" class="btn skip-btn" style="min-width: 150px;">
+                            ⏭️ Skip
+                        </button>
+                    </div>
+
+                    <div id="feedback" class="hidden"
+                        style="margin-top: 1.5rem; padding: 1rem; border-radius: var(--border-radius-md); font-size: 1.1rem; font-weight: 600;">
+                        <!-- Feedback will appear here -->
+                    </div>
+                </div>
+
+                <!-- Result Screen -->
+                <div id="resultScreen" class="hidden" style="text-align: center;">
+                    <div style="font-size: 5rem; margin-bottom: 1rem;">🎉</div>
+                    <h2 style="font-size: 2rem; margin-bottom: 1rem;">Game Complete!</h2>
+                    <div style="font-size: 2.5rem; font-weight: 800; color: var(--color-success); margin-bottom: 1rem;">
+                        Final Score: <span id="finalScore">0</span>
+                    </div>
+                    <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem;">
+                        Correct: <span id="correctCount">0</span> / 10
+                    </p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <button onclick="resetGame()" class="btn btn-primary">
+                            🔄 Play Again
+                        </button>
+                        <button onclick="window.location.href='../index.html'" class="btn btn-success">
+                            🏠 Back to Hub
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="../js/storage.js"></script>
+    <script src="../js/achievements.js"></script>
+    <script>
+        // Word bank with hints
+        const words = [
+            { word: 'HELLO', hint: 'A common greeting' },
+            { word: 'BREAKFAST', hint: 'First meal of the day' },
+            { word: 'FAMILY', hint: 'Parents, siblings and relatives' },
+            { word: 'FRIEND', hint: 'Someone you like to spend time with' },
+            { word: 'COMPUTER', hint: 'Electronic device for work and games' },
+            { word: 'BEAUTIFUL', hint: 'Very pretty or attractive' },
+            { word: 'IMPORTANT', hint: 'Something that matters a lot' },
+            { word: 'LANGUAGE', hint: 'English, Portuguese, Spanish...' },
+            { word: 'STUDENT', hint: 'Someone who studies' },
+            { word: 'TEACHER', hint: 'Someone who instructs students' },
+            { word: 'BIRTHDAY', hint: 'Celebration of the day you were born' },
+            { word: 'WEATHER', hint: 'Sunny, rainy, cloudy...' },
+            { word: 'JOURNEY', hint: 'A trip or travel' },
+            { word: 'QUESTION', hint: 'What you ask when you don\'t know' },
+            { word: 'ANSWER', hint: 'Response to a question' }
+        ];
+
+        let currentWordIndex = 0;
+        let gameWords = [];
+        let score = 0;
+        let correctAnswers = 0;
+        let hintUsed = false;
+        let startTime;
+
+        // Initialize
+        ThemeManager.init();
+        SoundFX.init();
+
+        function toggleTheme() {
+            const newTheme = ThemeManager.toggle();
+            document.querySelector('.theme-toggle-slider').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            SoundFX.play('click');
+        }
+
+        function scrambleWord(word) {
+            const arr = word.split('');
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            const scrambled = arr.join('');
+            // Make sure it's different from original
+            return scrambled === word ? scrambleWord(word) : scrambled;
+        }
+
+        function initGame() {
+            startTime = Date.now();
+            gameWords = shuffleArray([...words]).slice(0, 10);
+            currentWordIndex = 0;
+            score = 0;
+            correctAnswers = 0;
+            loadWord();
+        }
+
+        function loadWord() {
+            if (currentWordIndex >= gameWords.length) {
+                endGame();
+                return;
+            }
+
+            const wordData = gameWords[currentWordIndex];
+            hintUsed = false;
+
+            document.getElementById('scrambledWord').textContent = scrambleWord(wordData.word);
+            document.getElementById('hintText').textContent = `💡 Hint: ${wordData.hint}`;
+            document.getElementById('answerInput').value = '';
+            document.getElementById('feedback').classList.add('hidden');
+            document.getElementById('currentQuestion').textContent = currentWordIndex + 1;
+
+            const progress = ((currentWordIndex + 1) / gameWords.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+
+            document.getElementById('answerInput').focus();
+        }
+
+        function showHint() {
+            if (!hintUsed) {
+                const wordData = gameWords[currentWordIndex];
+                document.getElementById('answerInput').value = wordData.word[0];
+                hintUsed = true;
+                SoundFX.play('click');
+            }
+        }
+
+        function checkAnswer() {
+            const answer = document.getElementById('answerInput').value.trim().toUpperCase();
+            const correctWord = gameWords[currentWordIndex].word;
+            const feedback = document.getElementById('feedback');
+
+            if (!answer) {
+                feedback.textContent = '❌ Please type an answer first!';
+                feedback.style.background = 'var(--gradient-error)';
+                feedback.style.color = 'white';
+                feedback.classList.remove('hidden');
+                SoundFX.play('error');
+                return;
+            }
+
+            if (answer === correctWord) {
+                // Correct!
+                const pointsEarned = hintUsed ? 8 : 10;
+                score += pointsEarned;
+                correctAnswers++;
+
+                feedback.textContent = `✓ Correct! +${pointsEarned} points`;
+                feedback.style.background = 'var(--gradient-success)';
+                feedback.style.color = 'white';
+                feedback.classList.remove('hidden');
+
+                SoundFX.play('success');
+                document.getElementById('score').textContent = score;
+
+                setTimeout(() => {
+                    currentWordIndex++;
+                    loadWord();
+                }, 1500);
+            } else {
+                // Incorrect
+                feedback.textContent = `❌ Wrong! The answer was: ${correctWord}`;
+                feedback.style.background = 'var(--gradient-error)';
+                feedback.style.color = 'white';
+                feedback.classList.remove('hidden');
+
+                SoundFX.play('error');
+
+                setTimeout(() => {
+                    currentWordIndex++;
+                    loadWord();
+                }, 2000);
+            }
+        }
+
+        function skipWord() {
+            const correctWord = gameWords[currentWordIndex].word;
+            const feedback = document.getElementById('feedback');
+
+            feedback.textContent = `⏭️ Skipped. The answer was: ${correctWord}`;
+            feedback.style.background = 'var(--gradient-warning)';
+            feedback.style.color = 'white';
+            feedback.classList.remove('hidden');
+
+            SoundFX.play('click');
+
+            setTimeout(() => {
+                currentWordIndex++;
+                loadWord();
+            }, 1500);
+        }
+
+        function endGame() {
+            const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+
+            // Save progress
+            UserProgress.recordGame('word-scramble', score, timeSpent);
+
+            // Check achievements
+            Achievements.check(UserProgress.getStats());
+
+            // Show result screen
+            document.getElementById('gameArea').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('correctCount').textContent = correctAnswers;
+
+            createConfetti(50);
+            SoundFX.play('achievement');
+        }
+
+        function resetGame() {
+            document.getElementById('gameArea').classList.remove('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
+            initGame();
+            SoundFX.play('click');
+        }
+
+        // Enter key to check answer
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('answerInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    checkAnswer();
+                }
+            });
+
+            initGame();
+            const currentTheme = ThemeManager.getCurrent();
+            document.querySelector('.theme-toggle-slider').textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        });
+    </script>
+</body>
+
+</html>

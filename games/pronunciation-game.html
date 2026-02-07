@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pronunciation Practice - English Games Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .target-word {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--color-primary);
+            text-align: center;
+            margin: 2rem 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .phonetic {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+
+        .record-btn {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: var(--gradient-error);
+            color: white;
+            border: none;
+            font-size: 4rem;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .record-btn:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-xl), 0 0 30px rgba(239, 68, 68, 0.4);
+        }
+
+        .record-btn.recording {
+            animation: pulse 1.5s infinite;
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 20px rgba(239, 68, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
+        .pronunciation-tip {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            padding: 1.5rem;
+            border-radius: var(--border-radius-md);
+            border-left: 4px solid var(--color-info);
+            margin: 1.5rem 0;
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: 800;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .score-excellent {
+            color: #10b981;
+        }
+
+        .score-good {
+            color: #f59e0b;
+        }
+
+        .score-try-again {
+            color: #ef4444;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="animated-bg">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
+    <nav class="nav-container">
+        <div class="nav-content">
+            <a href="../index.html" class="nav-logo">🎮 Back to Hub</a>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <div class="theme-toggle-slider">🌙</div>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section class="section" style="padding-top: 3rem;">
+            <div class="glass-card" style="padding: 3rem; max-width: 700px; margin: 0 auto;">
+                <h1
+                    style="font-size: 2.5rem; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem; text-align: center;">
+                    🎤 Pronunciation Practice
+                </h1>
+                <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+                    Practice speaking English words correctly!
+                </p>
+
+                <!-- Check browser support -->
+                <div id="browserCheck" class="hidden pronunciation-tip">
+                    <p style="margin: 0; font-weight: 600; color: var(--color-error);">
+                        ⚠️ Your browser doesn't support speech recognition. Please use Chrome or Edge for this game.
+                    </p>
+                </div>
+
+                <!-- Progress -->
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <span style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary);">
+                        Word <span id="currentWord">1</span> of <span id="totalWords">8</span>
+                    </span>
+                    <div style="margin-top: 0.5rem;">
+                        <span style="font-size: 1.25rem; font-weight: 700; color: var(--color-success);">
+                            Total Score: <span id="totalScore">0</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Game Area -->
+                <div id="gameArea">
+                    <!-- Word Display -->
+                    <div class="target-word" id="targetWord">HELLO</div>
+                    <div class="phonetic" id="phoneticText">/həˈloʊ/</div>
+
+                    <!-- Listen Button -->
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <button onclick="playTargetWord()" class="btn btn-primary" style="min-width: 180px;">
+                            🔊 Listen
+                        </button>
+                    </div>
+
+                    <!-- Pronunciation Tip -->
+                    <div class="pronunciation-tip">
+                        <p style="margin: 0; font-weight: 600; color: var(--text-primary);">
+                            💡 <span id="pronunciationTip">A common greeting</span>
+                        </p>
+                    </div>
+
+                    <!-- Record Button -->
+                    <div style="text-align: center; margin: 2rem 0;">
+                        <button id="recordBtn" class="record-btn" onclick="toggleRecording()">
+                            🎤
+                        </button>
+                        <p id="recordStatus"
+                            style="margin-top: 1rem; color: var(--text-secondary); font-size: 1rem; font-weight: 500;">
+                            Click to speak
+                        </p>
+                    </div>
+
+                    <!-- Feedback -->
+                    <div id="feedback" class="hidden" style="text-align: center; margin-top: 2rem;">
+                        <div class="score-display" id="scoreDisplay">0%</div>
+                        <p id="feedbackText"
+                            style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 1.5rem;"></p>
+                        <button onclick="nextWord()" class="btn btn-primary" style="min-width: 200px;">
+                            Next Word →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Result Screen -->
+                <div id="resultScreen" class="hidden" style="text-align: center;">
+                    <div style="font-size: 5rem; margin-bottom: 1rem;">🎤</div>
+                    <h2 style="font-size: 2rem; margin-bottom: 1rem;">Practice Complete!</h2>
+                    <div style="font-size: 2.5rem; font-weight: 800; color: var(--color-success); margin-bottom: 1rem;">
+                        Final Score: <span id="finalScore">0</span>
+                    </div>
+                    <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem;">
+                        Keep practicing to improve your pronunciation!
+                    </p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <button onclick="resetGame()" class="btn btn-primary">
+                            🔄 Practice Again
+                        </button>
+                        <button onclick="window.location.href='../index.html'" class="btn btn-success">
+                            🏠 Back to Hub
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="../js/storage.js"></script>
+    <script src="../js/achievements.js"></script>
+    <script>
+        const words = [
+            { word: 'HELLO', phonetic: '/həˈloʊ/', tip: 'A common greeting' },
+            { word: 'BEAUTIFUL', phonetic: '/ˈbjuːtɪfəl/', tip: 'Very pretty or attractive' },
+            { word: 'IMPORTANT', phonetic: '/ɪmˈpɔːrtənt/', tip: 'Something that matters' },
+            { word: 'ENGLISH', phonetic: '/ˈɪŋɡlɪʃ/', tip: 'The language we\'re learning' },
+            { word: 'BREAKFAST', phonetic: '/ˈbrekfəst/', tip: 'First meal of the day' },
+            { word: 'COMPUTER', phonetic: '/kəmˈpjuːtər/', tip: 'Electronic device' },
+            { word: 'WONDERFUL', phonetic: '/ˈwʌndərfəl/', tip: 'Extremely good' },
+            { word: 'VOCABULARY', phonetic: '/vəˈkæbjələri/', tip: 'Words you know' }
+        ];
+
+        let currentWordIndex = 0;
+        let totalScore = 0;
+        let recognition = null;
+        let isRecording = false;
+        let startTime;
+
+        // Initialize
+        ThemeManager.init();
+        SoundFX.init();
+
+        function toggleTheme() {
+            const newTheme = ThemeManager.toggle();
+            document.querySelector('.theme-toggle-slider').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            SoundFX.play('click');
+        }
+
+        // Check browser support
+        function checkBrowserSupport() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            if (!SpeechRecognition) {
+                document.getElementById('browserCheck').classList.remove('hidden');
+                document.getElementById('recordBtn').disabled = true;
+                return false;
+            }
+
+            // Initialize recognition
+            recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onresult = handleRecognitionResult;
+            recognition.onerror = handleRecognitionError;
+            recognition.onend = () => {
+                isRecording = false;
+                document.getElementById('recordBtn').classList.remove('recording');
+                document.getElementById('recordStatus').textContent = 'Click to speak';
+            };
+
+            return true;
+        }
+
+        function initGame() {
+            if (!checkBrowserSupport()) return;
+
+            startTime = Date.now();
+            currentWordIndex = 0;
+            totalScore = 0;
+            document.getElementById('totalWords').textContent = words.length;
+            loadWord();
+        }
+
+        function loadWord() {
+            if (currentWordIndex >= words.length) {
+                endGame();
+                return;
+            }
+
+            const wordData = words[currentWordIndex];
+            document.getElementById('targetWord').textContent = wordData.word;
+            document.getElementById('phoneticText').textContent = wordData.phonetic;
+            document.getElementById('pronunciationTip').textContent = wordData.tip;
+            document.getElementById('currentWord').textContent = currentWordIndex + 1;
+            document.getElementById('feedback').classList.add('hidden');
+        }
+
+        function playTargetWord() {
+            const wordData = words[currentWordIndex];
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+
+                const utterance = new SpeechSynthesisUtterance(wordData.word);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                utterance.pitch = 1;
+
+                window.speechSynthesis.speak(utterance);
+                SoundFX.play('click');
+            }
+        }
+
+        function toggleRecording() {
+            if (!recognition) return;
+
+            if (isRecording) {
+                recognition.stop();
+            } else {
+                isRecording = true;
+                document.getElementById('recordBtn').classList.add('recording');
+                document.getElementById('recordStatus').textContent = 'Listening...';
+                recognition.start();
+                SoundFX.play('click');
+            }
+        }
+
+        function handleRecognitionResult(event) {
+            const spokenText = event.results[0][0].transcript.toUpperCase();
+            const targetWord = words[currentWordIndex].word;
+            const confidence = event.results[0][0].confidence;
+
+            // Calculate score based on match and confidence
+            let score = 0;
+            let feedback = '';
+            let scoreClass = 'score-try-again';
+
+            if (spokenText === targetWord) {
+                score = Math.round(confidence * 100);
+
+                if (score >= 80) {
+                    feedback = '🎉 Excellent pronunciation!';
+                    scoreClass = 'score-excellent';
+                    SoundFX.play('success');
+                } else if (score >= 60) {
+                    feedback = '👍 Good job! Keep practicing.';
+                    scoreClass = 'score-good';
+                    SoundFX.play('success');
+                } else {
+                    feedback = '💪 Not bad! Try again for better accuracy.';
+                    scoreClass = 'score-try-again';
+                    SoundFX.play('click');
+                }
+            } else {
+                feedback = `❌ You said "${spokenText}". Try saying "${targetWord}" again.`;
+                score = 0;
+                SoundFX.play('error');
+            }
+
+            // Update score
+            totalScore += score;
+            document.getElementById('totalScore').textContent = totalScore;
+
+            // Show feedback
+            document.getElementById('scoreDisplay').textContent = score + '%';
+            document.getElementById('scoreDisplay').className = `score-display ${scoreClass}`;
+            document.getElementById('feedbackText').textContent = feedback;
+            document.getElementById('feedback').classList.remove('hidden');
+        }
+
+        function handleRecognitionError(event) {
+            console.error('Recognition error:', event.error);
+            isRecording = false;
+            document.getElementById('recordBtn').classList.remove('recording');
+            document.getElementById('recordStatus').textContent = 'Click to speak';
+
+            if (event.error === 'no-speech') {
+                alert('No speech detected. Please try again.');
+            } else if (event.error === 'not-allowed') {
+                alert('Microphone access denied. Please allow microphone access to use this feature.');
+            }
+        }
+
+        function nextWord() {
+            currentWordIndex++;
+            loadWord();
+            SoundFX.play('click');
+        }
+
+        function endGame() {
+            const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+            const avgScore = Math.round(totalScore / words.length);
+
+            // Save progress
+            UserProgress.recordGame('pronunciation-game', avgScore, timeSpent);
+
+            // Check achievements
+            Achievements.check(UserProgress.getStats());
+
+            // Show results
+            document.getElementById('gameArea').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            document.getElementById('finalScore').textContent = totalScore;
+
+            if (avgScore >= 80) {
+                createConfetti(50);
+            }
+            SoundFX.play('achievement');
+        }
+
+        function resetGame() {
+            document.getElementById('gameArea').classList.remove('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('totalScore').textContent = '0';
+            initGame();
+            SoundFX.play('click');
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            initGame();
+            const currentTheme = ThemeManager.getCurrent();
+            document.querySelector('.theme-toggle-slider').textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        });
+    </script>
+</body>
+
+</html>

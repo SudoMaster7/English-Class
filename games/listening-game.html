@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listening Game - English Games Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .listen-btn {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .listen-btn:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-xl), var(--shadow-glow);
+        }
+
+        .listen-btn:active {
+            transform: scale(0.95);
+        }
+
+        .listen-btn.playing {
+            animation: pulse 1s infinite;
+        }
+
+        .option-btn {
+            width: 100%;
+            padding: 1.25rem;
+            font-size: 1.1rem;
+            text-align: left;
+            background: var(--bg-glass);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            transition: all var(--transition-base);
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .option-btn:hover {
+            transform: translateX(8px);
+            border-color: var(--color-primary);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        }
+
+        .option-btn.correct {
+            background: var(--gradient-success);
+            color: white;
+            border-color: transparent;
+            animation: pulse 0.5s;
+        }
+
+        .option-btn.incorrect {
+            background: var(--gradient-error);
+            color: white;
+            border-color: transparent;
+            animation: shake 0.5s;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="animated-bg">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
+    <nav class="nav-container">
+        <div class="nav-content">
+            <a href="../index.html" class="nav-logo">🎮 Back to Hub</a>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <div class="theme-toggle-slider">🌙</div>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section class="section" style="padding-top: 3rem;">
+            <div class="glass-card" style="padding: 3rem; max-width: 700px; margin: 0 auto;">
+                <h1
+                    style="font-size: 2.5rem; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem; text-align: center;">
+                    🎧 Listening Game
+                </h1>
+                <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+                    Listen carefully and select the correct answer!
+                </p>
+
+                <!-- Progress -->
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <span style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary);">
+                        Question <span id="currentQuestion">1</span> of <span id="totalQuestions">10</span>
+                    </span>
+                    <div style="margin-top: 0.5rem;">
+                        <span style="font-size: 1.25rem; font-weight: 700; color: var(--color-success);">
+                            Score: <span id="score">0</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Game Area -->
+                <div id="gameArea">
+                    <!-- Listen Area -->
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <button id="listenBtn" class="listen-btn" onclick="playAudio()">
+                            🔊
+                        </button>
+                        <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                            Click to listen
+                        </p>
+                    </div>
+
+                    <!-- Question -->
+                    <div id="questionText"
+                        style="text-align: center; font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin-bottom: 2rem;">
+                        What did you hear?
+                    </div>
+
+                    <!-- Options -->
+                    <div id="optionsContainer" style="display: grid; gap: 1rem;">
+                        <!-- Options will be generated here -->
+                    </div>
+
+                    <!-- Next Button -->
+                    <div id="nextBtnContainer" class="hidden" style="text-align: center; margin-top: 2rem;">
+                        <button onclick="nextQuestion()" class="btn btn-primary" style="min-width: 200px;">
+                            Next Question →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Result Screen -->
+                <div id="resultScreen" class="hidden" style="text-align: center;">
+                    <div style="font-size: 5rem; margin-bottom: 1rem;">🎉</div>
+                    <h2 style="font-size: 2rem; margin-bottom: 1rem;">Great Job!</h2>
+                    <div style="font-size: 2.5rem; font-weight: 800; color: var(--color-success); margin-bottom: 1rem;">
+                        Score: <span id="finalScore">0</span> / <span id="finalTotal">100</span>
+                    </div>
+                    <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem;">
+                        You got <span id="correctCount">0</span> out of <span id="questionCount">10</span> correct!
+                    </p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <button onclick="resetGame()" class="btn btn-primary">
+                            🔄 Play Again
+                        </button>
+                        <button onclick="window.location.href='../index.html'" class="btn btn-success">
+                            🏠 Back to Hub
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="../js/storage.js"></script>
+    <script src="../js/achievements.js"></script>
+    <script>
+        const questions = [
+            {
+                text: "I wake up at seven o'clock every morning.",
+                question: "What time does the person wake up?",
+                options: ["6:00 AM", "7:00 AM", "8:00 AM", "9:00 AM"],
+                correct: 1
+            },
+            {
+                text: "She loves reading books in the library.",
+                question: "Where does she like to read?",
+                options: ["At home", "In the park", "In the library", "At school"],
+                correct: 2
+            },
+            {
+                text: "We went to the beach last Sunday.",
+                question: "When did they go to the beach?",
+                options: ["Last Friday", "Last Saturday", "Last Sunday", "Last Monday"],
+                correct: 2
+            },
+            {
+                text: "He plays soccer every weekend with his friends.",
+                question: "How often does he play soccer?",
+                options: ["Every day", "Every weekend", "Every month", "Once a year"],
+                correct: 1
+            },
+            {
+                text: "My favorite color is blue.",
+                question: "What is the person's favorite color?",
+                options: ["Red", "Blue", "Green", "Yellow"],
+                correct: 1
+            },
+            {
+                text: "They are studying English at the university.",
+                question: "What are they studying?",
+                options: ["Math", "Science", "English", "History"],
+                correct: 2
+            },
+            {
+                text: "I usually have coffee for breakfast.",
+                question: "What does the person drink for breakfast?",
+                options: ["Tea", "Coffee", "Juice", "Milk"],
+                correct: 1
+            },
+            {
+                text: "The cat is sleeping on the sofa.",
+                question: "Where is the cat?",
+                options: ["On the bed", "On the floor", "On the sofa", "On the table"],
+                correct: 2
+            },
+            {
+                text: "She works as a teacher in a primary school.",
+                question: "What is her job?",
+                options: ["Doctor", "Teacher", "Nurse", "Engineer"],
+                correct: 1
+            },
+            {
+                text: "We need to buy some vegetables at the supermarket.",
+                question: "What do they need to buy?",
+                options: ["Fruits", "Vegetables", "Meat", "Bread"],
+                correct: 1
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let correctAnswers = 0;
+        let startTime;
+        let hasAnswered = false;
+
+        // Initialize
+        ThemeManager.init();
+        SoundFX.init();
+
+        function toggleTheme() {
+            const newTheme = ThemeManager.toggle();
+            document.querySelector('.theme-toggle-slider').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            SoundFX.play('click');
+        }
+
+        function initGame() {
+            startTime = Date.now();
+            currentQuestionIndex = 0;
+            score = 0;
+            correctAnswers = 0;
+            document.getElementById('totalQuestions').textContent = questions.length;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                endGame();
+                return;
+            }
+
+            hasAnswered = false;
+            const question = questions[currentQuestionIndex];
+
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('questionText').textContent = question.question;
+            document.getElementById('nextBtnContainer').classList.add('hidden');
+
+            // Load options
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            question.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => selectAnswer(index);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function playAudio() {
+            const question = questions[currentQuestionIndex];
+            const listenBtn = document.getElementById('listenBtn');
+
+            if ('speechSynthesis' in window) {
+                // Cancel any ongoing speech
+                window.speechSynthesis.cancel();
+
+                const utterance = new SpeechSynthesisUtterance(question.text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+
+                listenBtn.classList.add('playing');
+
+                utterance.onend = () => {
+                    listenBtn.classList.remove('playing');
+                };
+
+                window.speechSynthesis.speak(utterance);
+                SoundFX.play('click');
+            } else {
+                alert('Sorry, your browser does not support text-to-speech!');
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (hasAnswered) return;
+
+            hasAnswered = true;
+            const question = questions[currentQuestionIndex];
+            const buttons = document.querySelectorAll('.option-btn');
+
+            if (selectedIndex === question.correct) {
+                // Correct answer
+                buttons[selectedIndex].classList.add('correct');
+                score += 10;
+                correctAnswers++;
+                SoundFX.play('success');
+                document.getElementById('score').textContent = score;
+            } else {
+                // Incorrect answer
+                buttons[selectedIndex].classList.add('incorrect');
+                buttons[question.correct].classList.add('correct');
+                SoundFX.play('error');
+            }
+
+            // Disable all buttons
+            buttons.forEach(btn => btn.disabled = true);
+
+            // Show next button
+            document.getElementById('nextBtnContainer').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+            SoundFX.play('click');
+        }
+
+        function endGame() {
+            const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+
+            // Save progress
+            UserProgress.recordGame('listening-game', score, timeSpent);
+
+            // Check achievements
+            Achievements.check(UserProgress.getStats());
+
+            // Show results
+            document.getElementById('gameArea').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalTotal').textContent = questions.length * 10;
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('questionCount').textContent = questions.length;
+
+            if (score === questions.length * 10) {
+                createConfetti(50);
+            }
+            SoundFX.play('achievement');
+        }
+
+        function resetGame() {
+            document.getElementById('gameArea').classList.remove('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('score').textContent = '0';
+            initGame();
+            SoundFX.play('click');
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            initGame();
+            const currentTheme = ThemeManager.getCurrent();
+            document.querySelector('.theme-toggle-slider').textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        });
+    </script>
+</body>
+
+</html>
