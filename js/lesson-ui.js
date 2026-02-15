@@ -157,17 +157,34 @@ function closeLevelSelector() {
     SoundFX.play('click');
 }
 
+// Helper to get correct path to lesson page based on current location
+function getLessonPagePath() {
+    const path = window.location.pathname;
+
+    // If we are in pages/lessons/
+    if (path.includes('/lessons/') && !path.includes('/gamification/')) {
+        return 'daily-lesson.html';
+    }
+
+    // If we are in other pages subdirectories (gamification, auth)
+    if (path.includes('/pages/')) {
+        return '../lessons/daily-lesson.html';
+    }
+
+    // Default (Root)
+    return 'pages/lessons/daily-lesson.html';
+}
+
 // Select a lesson
 function selectLesson(themeId, level) {
     UserProgress.setCurrentLesson(themeId, level);
     SoundFX.play('success');
-    // Redirect directly to practice page
-    window.location.href = 'practice-lesson.html';
+    window.location.href = getLessonPagePath() + '?t=' + Date.now();
 }
 
 // Start current lesson  
 function startCurrentLesson() {
-    window.location.href = 'practice-lesson.html';
+    window.location.href = getLessonPagePath() + '?t=' + Date.now();
 }
 
 // Update current lesson display

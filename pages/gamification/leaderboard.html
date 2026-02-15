@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rankings - English Learning Platform</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #f0f9ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 24px;
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 8px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 16px 24px;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Leaderboard Card */
+        .leaderboard-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .last-updated {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* User Rank Card */
+        .user-rank-card {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.2) 100%);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-rank-position {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .user-rank-info {
+            flex: 1;
+        }
+
+        .user-rank-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .user-rank-stats {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            gap: 16px;
+        }
+
+        /* Ranking List */
+        .ranking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ranking-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .ranking-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(4px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .ranking-position {
+            font-size: 1.5rem;
+            font-weight: 800;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .ranking-position.gold {
+            color: #ffd700;
+        }
+
+        .ranking-position.silver {
+            color: #c0c0c0;
+        }
+
+        .ranking-position.bronze {
+            color: #cd7f32;
+        }
+
+        .ranking-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .ranking-info {
+            flex: 1;
+        }
+
+        .ranking-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .ranking-league {
+            font-size: 0.875rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .ranking-stats {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .ranking-xp {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .ranking-level {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* League Badges */
+        .league-bronze {
+            background: linear-gradient(135deg, #cd7f32 0%, #8b5a2b 100%);
+        }
+
+        .league-silver {
+            background: linear-gradient(135deg, #c0c0c0 0%, #808080 100%);
+        }
+
+        .league-gold {
+            background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
+        }
+
+        .league-platinum {
+            background: linear-gradient(135deg, #e5e4e2 0%, #b0c4de 100%);
+        }
+
+        .league-diamond {
+            background: linear-gradient(135deg, #b9f2ff 0%, #4facfe 100%);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab {
+                font-size: 0.875rem;
+                padding: 12px 16px;
+            }
+
+            .ranking-item {
+                gap: 12px;
+            }
+
+            .ranking-position {
+                min-width: 40px;
+                font-size: 1.25rem;
+            }
+
+            .ranking-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 1.25rem;
+            }
+
+            .user-rank-position {
+                font-size: 2rem;
+                min-width: 60px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 Rankings</h1>
+            <a href="dashboard.html" class="back-btn">
+                ← Voltar
+            </a>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="global">🌍 Global</button>
+            <button class="tab" data-tab="weekly">📅 Semanal</button>
+            <button class="tab" data-tab="friends">👥 Amigos</button>
+        </div>
+
+        <div id="userRankContainer"></div>
+
+        <div class="leaderboard-card">
+            <div class="card-header">
+                <div class="card-title" id="cardTitle">Ranking Global</div>
+                <div class="last-updated" id="lastUpdated"></div>
+            </div>
+            <div id="leaderboardContent">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <div>Carregando rankings...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/api.js"></script>>
+    <script>
+        let currentTab = 'global';
+
+        // Check authentication
+        if (!API.isAuthenticated()) {
+            window.location.href = 'login.html';
+        }
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentTab = tab.dataset.tab;
+                loadLeaderboard();
+            });
+        });
+
+        // Load leaderboard
+        async function loadLeaderboard() {
+            const content = document.getElementById('leaderboardContent');
+            const title = document.getElementById('cardTitle');
+            const userRankContainer = document.getElementById('userRankContainer');
+
+            content.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div>Carregando rankings...</div></div>';
+
+            try {
+                let data;
+
+                switch (currentTab) {
+                    case 'global':
+                        data = await API.leaderboard.global(100);
+                        title.textContent = '🌍 Ranking Global';
+                        break;
+                    case 'weekly':
+                        data = await API.leaderboard.weekly(50);
+                        title.textContent = '📅 Ranking Semanal';
+                        break;
+                    case 'friends':
+                        data = await API.leaderboard.friends();
+                        title.textContent = '👥 Ranking de Amigos';
+                        break;
+                }
+
+                if (data.success) {
+                    renderLeaderboard(data.data);
+                    renderUserRank(data.data.userRank);
+
+                    // Update last updated time
+                    const updated = new Date(data.data.lastUpdated);
+                    document.getElementById('lastUpdated').textContent =
+                        `Atualizado: ${updated.toLocaleTimeString('pt-BR')}`;
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">⚠️</div>
+                        <div class="empty-text">Erro ao carregar rankings: ${error.message}</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Render user rank card
+        function renderUserRank(userRank) {
+            const container = document.getElementById('userRankContainer');
+
+            if (!userRank || !userRank.rank) {
+                container.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="user-rank-card">
+                    <div class="user-rank-position">#${userRank.rank}</div>
+                    <div class="user-rank-info">
+                        <div class="user-rank-name">Sua Posição</div>
+                        <div class="user-rank-stats">
+                            <span>⚡ ${userRank.xp.toLocaleString('pt-BR')} XP</span>
+                            <span>📊 Nível ${userRank.level}</span>
+                            <span class="league-${userRank.league}">🏅 ${capitalizeLeague(userRank.league)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render leaderboard
+        function renderLeaderboard(data) {
+            const content = document.getElementById('leaderboardContent');
+
+            if (!data.rankings || data.rankings.length === 0) {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">👥</div>
+                        <div class="empty-text">Nenhum jogador no ranking ainda</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const rankings = data.rankings.map((player, index) => {
+                const rank = index + 1;
+                let positionClass = '';
+                if (rank === 1) positionClass = 'gold';
+                else if (rank === 2) positionClass = 'silver';
+                else if (rank === 3) positionClass = 'bronze';
+
+                // Only use avatar if it's an emoji (not a URL)
+                const avatar = (player.avatar && !player.avatar.startsWith('http')) ? player.avatar : '👤';
+                const leagueName = player.league ? capitalizeLeague(player.league) : '';
+
+                return `
+                    <div class="ranking-item">
+                        <div class="ranking-position ${positionClass}">${rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`}</div>
+                        <div class="ranking-avatar">${avatar}</div>
+                        <div class="ranking-info">
+                            <div class="ranking-name">${player.name}</div>
+                            ${leagueName ? `<span class="ranking-league league-${player.league}">${leagueName}</span>` : ''}
+                        </div>
+                        <div class="ranking-stats">
+                            <div class="ranking-xp">${player.xp.toLocaleString('pt-BR')} XP</div>
+                            <div class="ranking-level">Nível ${player.level}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            content.innerHTML = `<div class="ranking-list">${rankings}</div>`;
+        }
+
+        function capitalizeLeague(league) {
+            const names = {
+                bronze: 'Bronze',
+                silver: 'Prata',
+                gold: 'Ouro',
+                platinum: 'Platina',
+                diamond: 'Diamante'
+            };
+            return names[league] || league;
+        }
+
+        // Initial load
+        loadLeaderboard();
+    </script>
+</body>
+
+</html>

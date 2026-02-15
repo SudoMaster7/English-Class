@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Nível - English Games Hub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <script src="../../js/api.js"></script>
+    <style>
+        .level-header {
+            text-align: center;
+            padding: 3rem 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+            border: 4px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .detail-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .skill-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .skill-progress {
+            height: 100%;
+            background: var(--gradient-primary);
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="animated-bg">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
+    <nav class="nav-container">
+        <div class="nav-content">
+            <a href="../../index.html" class="nav-logo">🎮 English Games Hub</a>
+            <div class="nav-links">
+                <a href="../gamification/dashboard.html" class="nav-link">👤 Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top: 6rem;">
+        <button onclick="window.location.href='../gamification/dashboard.html'" class="btn"
+            style="margin-bottom: 2rem;">
+            ← Voltar ao Dashboard
+        </button>
+
+        <div id="loading" style="text-align: center; font-size: 1.5rem;">Carregando detalhes...</div>
+
+        <div id="content" class="fade-in-up" style="display: none;">
+            <!-- Header populated by JS -->
+            <div id="levelHeader" class="level-header"></div>
+
+            <div class="stat-grid">
+                <!-- Strengths -->
+                <div class="detail-card">
+                    <h3 style="color: #34d399; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
+                        <span>💪</span> Pontos Fortes
+                    </h3>
+                    <ul id="strengthsList" style="list-style: none; padding: 0; color: rgba(255,255,255,0.8);">
+                        <!-- Items -->
+                    </ul>
+                </div>
+
+                <!-- Weaknesses -->
+                <div class="detail-card">
+                    <h3 style="color: #f59e0b; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
+                        <span>📈</span> Áreas para Melhorar
+                    </h3>
+                    <ul id="weaknessesList" style="list-style: none; padding: 0; color: rgba(255,255,255,0.8);">
+                        <!-- Items -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Recommendation -->
+            <div class="glass-card" style="padding: 2rem; margin-bottom: 3rem;">
+                <h3 style="margin-bottom: 1rem;">🎯 Plano de Estudo Recomendado</h3>
+                <p id="recommendationText" style="color: rgba(1, 53, 9, 0.9); line-height: 1.6; font-size: 1.1rem;">
+                </p>
+
+                <div style="margin-top: 2rem; text-align: center;">
+                    <button onclick="window.location.href='daily-lesson.html'" class="btn btn-primary"
+                        style="padding: 1rem 3rem;">
+                        Começar Lição Recomendada
+                    </button>
+                    <button
+                        onclick="if(confirm('Tem certeza? Isso apagará seu progresso atual.')) window.location.href='placement-test.html'"
+                        class="btn" style="margin-left: 1rem; background: rgba(255,255,255,0.1);">
+                        Refazer Teste
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadDetails() {
+            try {
+                if (!API.isAuthenticated()) {
+                    window.location.href = '../auth/login.html';
+                    return;
+                }
+
+                const response = await API.auth.getCurrentUser();
+
+                if (response.success && response.data.user) {
+                    const user = response.data.user;
+                    const result = user.placementTestResult || {};
+                    const profile = user.profile || {};
+
+                    if (!user.placementTestCompleted) {
+                        alert('Você ainda não completou o teste de nivelamento.');
+                        window.location.href = 'placement-test.html';
+                        return;
+                    }
+
+                    renderPage(result);
+                }
+            } catch (error) {
+                console.error('Error loading details:', error);
+                document.getElementById('loading').textContent = 'Erro ao carregar dados.';
+            }
+        }
+
+        function renderPage(result) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+
+            const levelColors = {
+                'A1': '#3b82f6',
+                'A2': '#6366f1',
+                'B1': '#10b981',
+                'B2': '#f59e0b',
+                'C1': '#ef4444',
+                'C2': '#dc2626'
+            };
+
+            const levelNames = {
+                'A1': 'Iniciante',
+                'A2': 'Básico',
+                'B1': 'Intermediário',
+                'B2': 'Intermediário Superior',
+                'C1': 'Avançado',
+                'C2': 'Proficiente'
+            };
+
+            const color = levelColors[result.level] || '#fff';
+            const name = levelNames[result.level] || 'Desconhecido';
+
+            // Header
+            document.getElementById('levelHeader').innerHTML = `
+                <div class="level-circle" style="background: ${color}; box-shadow: 0 0 30px ${color}60;">
+                    ${result.level}
+                </div>
+                <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Nível ${name}</h1>
+                <p style="color: rgba(255,255,255,0.7); font-size: 1.2rem;">
+                    Pontuação: <strong style="color: white;">${result.score}%</strong> • Realizado em ${new Date(result.completedAt).toLocaleDateString()}
+                </p>
+            `;
+
+            // Strengths and Weaknesses
+            const details = result.details || { grammar: { correct: 0, total: 0 }, vocabulary: { correct: 0, total: 0 } };
+
+            let strengthsHtml = '';
+            let weaknessesHtml = '';
+
+            // Helper to process categories
+            const processCategory = (key, label) => {
+                const data = details[key];
+                if (!data || data.total === 0) return;
+
+                const pct = Math.round((data.correct / data.total) * 100);
+                const item = `
+                    <li style="margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span>${label}</span>
+                            <span>${pct}%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: ${pct}%; background: ${pct >= 70 ? '#10b981' : pct >= 50 ? '#f59e0b' : '#ef4444'};"></div>
+                        </div>
+                    </li>
+                `;
+
+                if (pct >= 70) strengthsHtml += item;
+                else weaknessesHtml += item;
+            };
+
+            processCategory('grammar', 'Gramática');
+            processCategory('vocabulary', 'Vocabulário');
+
+            document.getElementById('strengthsList').innerHTML = strengthsHtml || '<li style="opacity: 0.6;">Continue praticando para descobrir seus pontos fortes!</li>';
+            document.getElementById('weaknessesList').innerHTML = weaknessesHtml || '<li style="opacity: 0.6;">Ótimo trabalho! Mantenha o ritmo.</li>';
+
+            // Recommendation
+            let recText = '';
+            if (result.level === 'A1' || result.level === 'A2') {
+                recText = 'Concentre-se em construir uma base sólida de vocabulário e entender as estruturas gramaticais essenciais. As lições diárias de "Rotinas" e "Viagens" são ótimas para começar.';
+            } else if (result.level === 'B1' || result.level === 'B2') {
+                recText = 'Você já consegue se comunicar bem! Agora é hora de refinar sua precisão gramatical e expandir para tópicos mais complexos como "Negócios" e "Tecnologia".';
+            } else {
+                recText = 'Seu inglês é excelente! Desafie-se com materiais nativos, filmes sem legenda e as lições avançadas de "Debates" e "Literatura" para manter a fluência.';
+            }
+            document.getElementById('recommendationText').textContent = recText;
+        }
+
+        loadDetails();
+    </script>
+</body>
+
+</html>

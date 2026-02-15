@@ -588,36 +588,160 @@ h6 {
   display: none !important;
 }
 
+/* Default: Hide mobile menu button on desktop */
+.mobile-menu-btn {
+  display: none;
+}
+
 /* ===================================
    RESPONSIVE DESIGN
    =================================== */
 
 @media (max-width: 768px) {
-  .nav-content {
-    padding: 0 1rem;
+
+  /* Global Typography & Spacing */
+  h1 {
+    font-size: 1.75rem !important;
   }
 
-  .nav-links {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .nav-link {
-    font-size: 0.8rem;
-    padding: 0.4rem 0.8rem;
+  h2 {
+    font-size: 1.5rem !important;
   }
 
   .container {
     padding: 0 1rem;
   }
 
+  .section {
+    padding: 2rem 0;
+  }
+
+  /* Touch Targets */
+  .btn,
+  button,
+  .nav-link {
+    min-height: 44px;
+    /* Apple Design Guideline */
+  }
+
+  /* Mobile Navigation adjustments */
+  .nav-content {
+    padding: 0.5rem 1rem;
+    position: relative;
+    justify-content: space-between;
+  }
+
+  /* Show and style Hamburger Button on Mobile */
+  .mobile-menu-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 21px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 1002;
+    padding: 0;
+  }
+
+
+  .mobile-menu-btn span {
+    width: 100%;
+    height: 3px;
+    background-color: var(--text-primary);
+    border-radius: 3px;
+    transition: all 0.3s ease-in-out;
+  }
+
+  /* Hamburger Animation */
+  .mobile-menu-btn.active span:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+  }
+
+  .mobile-menu-btn.active span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .mobile-menu-btn.active span:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+  }
+
+  /* Mobile Menu Container */
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 80%;
+    height: 100vh;
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    flex-direction: column;
+    justify-content: flex-start;
+    /* Start from top to allow scrolling */
+    align-items: center;
+    gap: 2rem;
+    padding: 6rem 2rem 2rem 2rem;
+    /* Add top padding for spacing */
+    overflow-y: auto;
+    /* Enable vertical scrolling */
+    transition: right 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), visibility 0s linear 0.4s;
+    box-shadow: var(--shadow-xl);
+    z-index: 1001;
+    visibility: hidden;
+    /* Hide by default on mobile */
+  }
+
+  .nav-links.active {
+    right: 0;
+    visibility: visible;
+    transition: right 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), visibility 0s linear 0s;
+  }
+
+  .nav-link {
+    font-size: 1.2rem;
+    padding: 1rem 2rem;
+    width: 100%;
+    justify-content: center;
+    border-radius: var(--border-radius-md);
+  }
+
+  /* Overlay integration */
+  .nav-links.active::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: -25%;
+    /* Covers the rest of the screen */
+    width: 25%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+  }
+
+  /* User Menu Adjustments for Mobile */
+  #user-menu-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    order: -1;
+    /* Move to top on mobile */
+  }
+
+  #user-dropdown {
+    position: static;
+    display: none;
+    width: 100%;
+    box-shadow: none;
+    margin-top: 1rem;
+    background: transparent;
+    border: 1px solid var(--border-color);
+  }
+
   .game-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
-  }
-
-  .section {
-    padding: 2rem 0;
   }
 }
 

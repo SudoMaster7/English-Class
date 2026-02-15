@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Lesson - English Games Hub</title>
+    <meta name="description" content="Learn English with interactive daily lessons">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css">
+
+    <!-- Scripts -->
+    <script src="../../js/api.js"></script>
+    <script src="../../js/storage.js"></script>
+    <script src="../../js/lessons.js"></script>
+    <script src="../../js/lesson-ui.js"></script>
+    <style>
+        .lesson-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .vocab-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.25rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vocab-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .vocab-card:hover {
+            transform: translateX(5px) scale(1.02);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .vocab-card:hover::before {
+            opacity: 1;
+        }
+
+        .vocab-word {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.25rem;
+            letter-spacing: -0.5px;
+        }
+
+        .vocab-translation {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        .vocab-phonetic {
+            font-family: 'Courier New', monospace;
+            color: #a78bfa;
+            font-size: 0.9rem;
+            background: rgba(167, 139, 250, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .sentence-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s ease;
+        }
+
+        .sentence-card:hover {
+            transform: translateX(4px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .completion-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .completion-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="animated-bg">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="nav-container">
+        <div class="nav-content">
+            <a href="../../index.html" class="nav-logo">🎮 English Games Hub</a>
+            <div class="nav-links">
+                <a href="../../index.html#games" class="nav-link">🎯 Games</a>
+                <a href="../../pages/gamification/dashboard.html" class="nav-link">👤 Dashboard</a>
+                <button class="theme-toggle" onclick="ThemeManager.toggle(); updateThemeIcon();">
+                    <div class="theme-toggle-slider">🌙</div>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top: 6rem;">
+        <div class="lesson-container">
+            <!-- Header -->
+            <div class="glass-card fade-in-up"
+                style="margin-bottom: 2rem; padding: 3rem 2rem; text-align: center; border: 1px solid rgba(255,255,255,0.3); background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);">
+                <div style="font-size: 5rem; margin-bottom: 1.5rem; filter: drop-shadow(0 0 20px rgba(255,255,255,0.3)); animation: float 6s ease-in-out infinite;"
+                    id="themeIcon">📚</div>
+                <h1 style="margin-bottom: 1rem; font-size: 2.5rem; background: linear-gradient(to right, #fff, #a5f3fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; letter-spacing: -1px;"
+                    id="lessonTitle">Loading...</h1>
+                <p style="color: rgba(255,255,255,0.8); font-size: 1.25rem; font-weight: 300;" id="lessonSubtitle">Theme
+                    - Level</p>
+                <div style="margin-top: 2rem;">
+                    <span id="levelBadge"
+                        style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7; padding: 8px 16px; border-radius: 30px; font-weight: 600; font-size: 0.9rem; border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);">LEVEL</span>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+                <!-- Vocabulary Column -->
+                <div class="fade-in-up" style="animation-delay: 0.1s;">
+                    <h2
+                        style="color: white; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; font-size: 1.5rem;">
+                        <span style="background: rgba(255,255,255,0.1); padding: 8px; border-radius: 12px;">📖</span>
+                        Vocabulary
+                    </h2>
+                    <div id="vocabList" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Sentences Column -->
+                <div class="fade-in-up" style="animation-delay: 0.2s;">
+                    <h2
+                        style="color: white; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; font-size: 1.5rem;">
+                        <span style="background: rgba(255,255,255,0.1); padding: 8px; border-radius: 12px;">🗣️</span>
+                        Examples
+                    </h2>
+                    <div class="glass-card"
+                        style="padding: 2rem; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1);">
+                        <div id="sentencesList" style="display: flex; flex-direction: column; gap: 1rem;">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Tips Section -->
+                    <div class="glass-card"
+                        style="padding: 1.5rem; margin-top: 1.5rem; background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2)); border: 1px solid rgba(139, 92, 246, 0.3);">
+                        <h3
+                            style="color: white; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; font-size: 1.1rem;">
+                            <span>💡</span> Study Tip
+                        </h3>
+                        <p style="color: rgba(255,255,255,0.9); font-size: 0.95rem; line-height: 1.6;">
+                            Try to use these words in your own sentences. Repetition is key to mastering new vocabulary!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="fade-in-up" style="text-align: center; margin-bottom: 4rem; animation-delay: 0.3s;">
+                <button onclick="finishLesson()" class="btn"
+                    style="background: var(--gradient-success); padding: 1.25rem 4rem; font-size: 1.25rem; font-weight: 700; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4); border-radius: 50px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); letter-spacing: 0.5px;">
+                    ✅ Complete Lesson
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Completion Modal -->
+    <div id="completionModal" class="completion-modal">
+        <div class="glass-card"
+            style="padding: 3rem; text-align: center; max-width: 500px; animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+            <div style="font-size: 5rem; margin-bottom: 1rem;">🎉</div>
+            <h2 style="font-size: 2rem; margin-bottom: 1rem; color: white;">Lesson Complete!</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">You've mastered this vocabulary set.</p>
+
+            <div style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem;">
+                <div style="text-align: center;">
+                    <div id="modalXP" style="font-size: 1.5rem; font-weight: 800; color: #fbbf24;">+100</div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary);">XP</div>
+                </div>
+                <div style="text-align: center;">
+                    <div id="modalCoins" style="font-size: 1.5rem; font-weight: 800; color: #fbbf24;">+20</div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary);">Coins</div>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <button onclick="window.location.href='../../index.html'" class="btn"
+                    style="background: var(--gradient-primary); width: 100%;">
+                    Return to Home
+                </button>
+                <button onclick="window.location.href='../../pages/gamification/dashboard.html'" class="btn"
+                    style="background: rgba(255,255,255,0.1); width: 100%;">
+                    Go to Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Init
+        const lm = new LessonManager();
+        let currentLesson = null;
+        let isSpeaking = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            ThemeManager.init();
+            updateThemeIcon();
+            loadLessonContent();
+        });
+
+        function updateThemeIcon() {
+            const currentTheme = ThemeManager.getCurrent();
+            document.querySelector('.theme-toggle-slider').textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        }
+
+        function loadLessonContent() {
+            // Get current lesson from storage
+            const saved = UserProgress.getCurrentLesson();
+            if (!saved) {
+                // Default if nothing saved
+                currentLesson = lm.getLesson('daily-routines', 'A1');
+            } else {
+                currentLesson = lm.getLesson(saved.themeId, saved.level);
+            }
+
+            if (!currentLesson) {
+                console.error('Lesson not found');
+                return;
+            }
+
+            // Update Header
+            document.getElementById('themeIcon').textContent = currentLesson.themeIcon;
+            document.getElementById('lessonTitle').textContent = currentLesson.title;
+            document.getElementById('lessonSubtitle').textContent = `${currentLesson.themeName} - ${currentLesson.level} Level`;
+
+            const levelInfo = lm.getLevelInfo(currentLesson.level);
+            const badge = document.getElementById('levelBadge');
+            badge.textContent = levelInfo.name.toUpperCase();
+            badge.style.backgroundColor = levelInfo.color;
+
+            // Render Vocabulary
+            const vocabList = document.getElementById('vocabList');
+            vocabList.innerHTML = currentLesson.vocabulary.map(item => `
+                <div class="vocab-card" onclick="speak('${item.word}')">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div class="vocab-word">${item.word}</div>
+                            <div class="vocab-phonetic">${item.phonetic}</div>
+                        </div>
+                        <div style="font-size: 1.5rem; opacity: 0.7;">🔊</div>
+                    </div>
+                    <div class="vocab-translation" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                        ${item.translation}
+                    </div>
+                </div>
+            `).join('');
+
+            // Render Sentences
+            const sentencesList = document.getElementById('sentencesList');
+            sentencesList.innerHTML = currentLesson.sentences.map(sentence => `
+                <div class="sentence-card">
+                    <p style="color: white; margin: 0; line-height: 1.6;">"${sentence}"</p>
+                </div>
+            `).join('');
+        }
+
+        function speak(text) {
+            if (isSpeaking) {
+                window.speechSynthesis.cancel();
+            }
+            isSpeaking = true;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.onend = () => isSpeaking = false;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        async function finishLesson() {
+            SoundFX.play('success');
+            createConfetti(100); // from storage.js utils
+
+            let earnedXP = 100;
+            let earnedCoins = 20;
+
+            // Save Progress (Sync to Backend + Local Storage)
+            if (API && API.isAuthenticated()) {
+                try {
+                    // API.progress.completeLesson handles both backend sync and local user storage update
+                    const response = await API.progress.completeLesson(currentLesson.themeId, currentLesson.level, 100);
+
+                    if (response.success && response.data) {
+                        console.log('✅ Progress synced with backend:', response.data);
+                        earnedXP = response.data.xpEarned || 100;
+
+                        // Check if coins were actually awarded (backend logic: only first time)
+                        // response.data.coins is the TOTAL coins. We need to know if we earned any.
+                        // Ideally backend would return 'coinsEarned'. 
+                        // For now, we accept the default 20 or 0 logic later if needed.
+                        // But CRITICALLY: Update local storage for UI Lesson Checkmarks
+                        UserProgress.completeLesson(currentLesson.themeId, currentLesson.level, 100);
+                        earnedCoins = response.data.coinsEarned || 20; // Ensure we get the delta if possible, or fallback
+
+                        // If the backend returns total coins, we might just show the fixed reward amount in the modal
+                        // usually lesson rewards are fixed (e.g. 100xp, 20 coins)
+                    }
+                } catch (e) {
+                    console.error('Sync error', e);
+                    API.showNotification('Erro ao salvar progresso online. Tente novamente.', 'warning');
+                    // Fallback to local only if API fails? 
+                    // For now, we still want to show the modal as "completed" locally
+                    UserProgress.completeLesson(currentLesson.themeId, currentLesson.level, 100);
+                }
+            } else {
+                // Offline/No Auth fallback
+                UserProgress.completeLesson(currentLesson.themeId, currentLesson.level, 100);
+            }
+
+            // Update Modal Values
+            document.getElementById('modalXP').textContent = `+${earnedXP}`;
+            document.getElementById('modalCoins').textContent = `+${earnedCoins}`;
+
+            // Show Modal
+            const modal = document.getElementById('completionModal');
+            modal.classList.add('active');
+        }
+    </script>
+</body>
+
+</html>

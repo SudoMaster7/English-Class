@@ -1,0 +1,263 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Conta - English Learning Platform</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .password-requirements {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .auth-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .auth-links a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            color: #059669;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>🎮 English Learning</h1>
+                <p>Criar sua conta gratuitamente</p>
+            </div>
+
+            <div id="error-message" class="error-message"></div>
+            <div id="success-message" class="success-message"></div>
+
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="name">Nome completo</label>
+                    <input type="text" id="name" name="name" required placeholder="Seu nome">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required placeholder="seu@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" name="password" required placeholder="Mínimo 6 caracteres">
+                    <div class="password-requirements">
+                        Mínimo de 6 caracteres
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password">Confirmar senha</label>
+                    <input type="password" id="confirm-password" name="confirm-password" required
+                        placeholder="Digite a senha novamente">
+                </div>
+
+                <button type="submit" class="btn-primary" id="submit-btn">
+                    Criar Conta
+                </button>
+            </form>
+
+            <div class="auth-links">
+                <p>Já tem uma conta? <a href="login.html">Fazer login</a></p>
+                <p><a href="../../index.html">← Voltar para a página inicial</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/api.js"></script>
+    <script>
+        const form = document.getElementById('register-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const errorMsg = document.getElementById('error-message');
+        const successMsg = document.getElementById('success-message');
+
+        // Check if already logged in
+        if (API.isAuthenticated()) {
+            window.location.href = '../../index.html';
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            // Validate password match
+            if (password !== confirmPassword) {
+                errorMsg.textContent = 'As senhas não coincidem!';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            // Validate password length
+            if (password.length < 6) {
+                errorMsg.textContent = 'A senha deve ter no mínimo 6 caracteres!';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            // Disable form
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span> Criando conta...';
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+
+            try {
+                const response = await API.auth.register(email, password, name);
+
+                if (response.success) {
+                    successMsg.innerHTML = `
+                        <strong>✅ Conta criada com sucesso!</strong><br>
+                        Um email de verificação foi enviado para ${email}.<br>
+                        Verificando seu email você ganha 50 moedas! 💰
+                    `;
+                    successMsg.style.display = 'block';
+
+                    // Show welcome notification
+                    API.showNotification('🎉 Bem-vindo ao English Learning Platform!', 'success');
+
+                    // Redirect after delay
+                    setTimeout(() => {
+                        window.location.href = '../lessons/placement-test.html';
+                    }, 2000);
+                }
+            } catch (error) {
+                errorMsg.textContent = error.message || 'Erro ao criar conta. Tente novamente.';
+                errorMsg.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Criar Conta';
+            }
+        });
+    </script>
+</body>
+
+</html>

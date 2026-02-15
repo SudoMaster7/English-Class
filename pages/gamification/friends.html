@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amigos - English Learning Platform</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 24px;
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Search Box */
+        .search-box {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .search-input-wrapper {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 50px 16px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        #searchResults {
+            margin-top: 20px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 8px;
+            border-radius: 16px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 16px 24px;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .tab-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        /* Card */
+        .card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Friend/User Item */
+        .friend-item,
+        .user-item,
+        .request-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .friend-item:hover,
+        .user-item:hover,
+        .request-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateX(4px);
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            flex-shrink: 0;
+        }
+
+        .friend-info {
+            flex: 1;
+        }
+
+        .friend-name {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .friend-stats {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .league-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .btn-add:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-accept {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-accept:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-reject,
+        .btn-remove {
+            background: rgba(239, 68, 68, 0.2);
+            color: white;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-reject:hover,
+        .btn-remove:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .friend-stats {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👥 Amigos</h1>
+            <a href="dashboard.html" class="back-btn">← Voltar</a>
+        </div>
+
+        <!-- Search Box -->
+        <div class="search-box">
+            <h3 style="margin-bottom: 16px;">🔍 Buscar Usuários</h3>
+            <div class="search-input-wrapper">
+                <input type="text" class="search-input" id="searchInput" placeholder="Digite o nome do usuário..."
+                    onkeypress="if(event.key==='Enter') searchUsers()">
+                <button class="search-btn" onclick="searchUsers()">Buscar</button>
+            </div>
+            <div id="searchResults"></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="friends">
+                Meus Amigos
+                <span id="friendsCountBadge" class="tab-badge" style="display: none;"></span>
+            </button>
+            <button class="tab" data-tab="requests">
+                Solicitações
+                <span id="requestsCountBadge" class="tab-badge" style="display: none;"></span>
+            </button>
+        </div>
+
+        <!-- Friends List -->
+        <div id="friendsContent" class="card">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <div>Carregando amigos...</div>
+            </div>
+        </div>
+
+        <!-- Requests List -->
+        <div id="requestsContent" class="card" style="display: none;">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <div>Carregando solicitações...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/api.js"></script>
+    <script>
+        let currentTab = 'friends';
+
+        if (!API.isAuthenticated()) {
+            window.location.href = 'login.html';
+        }
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentTab = tab.dataset.tab;
+
+                if (currentTab === 'friends') {
+                    document.getElementById('friendsContent').style.display = 'block';
+                    document.getElementById('requestsContent').style.display = 'none';
+                    loadFriends();
+                } else {
+                    document.getElementById('friendsContent').style.display = 'none';
+                    document.getElementById('requestsContent').style.display = 'block';
+                    loadRequests();
+                }
+            });
+        });
+
+        // Search users
+        async function searchUsers() {
+            const query = document.getElementById('searchInput').value.trim();
+            const resultsDiv = document.getElementById('searchResults');
+
+            if (query.length < 2) {
+                resultsDiv.innerHTML = '<p style="margin-top: 12px; color: rgba(255,255,255,0.7);">Digite pelo menos 2 caracteres.</p>';
+                return;
+            }
+
+            resultsDiv.innerHTML = '<div class="loading" style="padding: 20px;"><div class="loading-spinner"></div></div>';
+
+            try {
+                const response = await API.friends.search(query);
+
+                if (response.success && response.data.users.length > 0) {
+                    renderSearchResults(response.data.users);
+                } else {
+                    resultsDiv.innerHTML = '<p style="margin-top: 12px; color: rgba(255,255,255,0.7);">Nenhum usuário encontrado.</p>';
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<p style="margin-top: 12px; color: #ef4444;">Erro: ${error.message}</p>`;
+            }
+        }
+
+        // Render search results
+        function renderSearchResults(users) {
+            const resultsDiv = document.getElementById('searchResults');
+
+            const html = users.map(user => `
+                <div class="user-item" style="margin-top: 12px;">
+                    <div class="avatar">${user.avatar || '👤'}</div>
+                    <div class="friend-info">
+                        <div class="friend-name">${user.name}</div>
+                        <div class="friend-stats">
+                            <span>📊 Nível ${user.level}</span>
+                            ${user.league ? `<span class="league-badge">${capitalizeLeague(user.league)}</span>` : ''}
+                        </div>
+                    </div>
+                    <button class="btn btn-add" onclick="sendFriendRequest('${user.userId}')">
+                        + Adicionar
+                    </button>
+                </div>
+            `).join('');
+
+            resultsDiv.innerHTML = html;
+        }
+
+        // Send friend request
+        async function sendFriendRequest(userId) {
+            try {
+                await API.friends.send(userId);
+                searchUsers(); // Refresh search
+            } catch (error) {
+                API.showNotification(`Erro: ${error.message}`, 'error');
+            }
+        }
+
+        // Load friends
+        async function loadFriends() {
+            const content = document.getElementById('friendsContent');
+            content.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div>Carregando amigos...</div></div>';
+
+            try {
+                const response = await API.friends.list();
+
+                if (response.success) {
+                    renderFriends(response.data.friends);
+                    updateBadge('friendsCountBadge', response.data.total);
+                } else {
+                    throw new Error('Failed to load friends');
+                }
+            } catch (error) {
+                content.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div>Erro: ${error.message}</div></div>`;
+            }
+        }
+
+        // Render friends
+        function renderFriends(friends) {
+            const content = document.getElementById('friendsContent');
+
+            if (friends.length === 0) {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">👥</div>
+                        <div>Você ainda não tem amigos. Busque usuários acima!</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const html = friends.map(friend => `
+                <div class="friend-item">
+                    <div class="avatar">${friend.avatar || '👤'}</div>
+                    <div class="friend-info">
+                        <div class="friend-name">${friend.name}</div>
+                        <div class="friend-stats">
+                            <span>⚡ ${friend.xp.toLocaleString('pt-BR')} XP</span>
+                            <span>📊 Nível ${friend.level}</span>
+                            ${friend.league ? `<span class="league-badge">${capitalizeLeague(friend.league)}</span>` : ''}
+                        </div>
+                    </div>
+                    <button class="btn btn-remove" onclick="removeFriend('${friend.userId}', '${friend.name}')">
+                        Remover
+                    </button>
+                </div>
+            `).join('');
+
+            content.innerHTML = html;
+        }
+
+        // Remove friend
+        async function removeFriend(userId, name) {
+            if (!confirm(`Remover ${name} dos seus amigos?`)) return;
+
+            try {
+                await API.friends.remove(userId);
+                API.showNotification('Amigo removido', 'success');
+                loadFriends();
+            } catch (error) {
+                API.showNotification(`Erro: ${error.message}`, 'error');
+            }
+        }
+
+        // Load requests
+        async function loadRequests() {
+            const content = document.getElementById('requestsContent');
+            content.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div>Carregando solicitações...</div></div>';
+
+            try {
+                const response = await API.friends.requests();
+
+                if (response.success) {
+                    renderRequests(response.data.requests);
+                    updateBadge('requestsCountBadge', response.data.total);
+                } else {
+                    throw new Error('Failed to load requests');
+                }
+            } catch (error) {
+                content.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div>Erro: ${error.message}</div></div>`;
+            }
+        }
+
+        // Render requests
+        function renderRequests(requests) {
+            const content = document.getElementById('requestsContent');
+
+            if (requests.length === 0) {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📬</div>
+                        <div>Nenhuma solicitação pendente</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const html = requests.map(request => `
+                <div class="request-item">
+                    <div class="avatar">${request.from.avatar || '👤'}</div>
+                    <div class="friend-info">
+                        <div class="friend-name">${request.from.name}</div>
+                        <div class="friend-stats">
+                            <span>📊 Nível ${request.from.level}</span>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-accept" onclick="acceptRequest('${request.requestId}')">
+                            ✓ Aceitar
+                        </button>
+                        <button class="btn btn-reject" onclick="rejectRequest('${request.requestId}')">
+                            ✕ Rejeitar
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            content.innerHTML = html;
+        }
+
+        // Accept request
+        async function acceptRequest(requestId) {
+            try {
+                await API.friends.accept(requestId);
+                loadRequests();
+                loadFriends(); // Refresh friends list
+            } catch (error) {
+                API.showNotification(`Erro: ${error.message}`, 'error');
+            }
+        }
+
+        // Reject request
+        async function rejectRequest(requestId) {
+            try {
+                await API.friends.reject(requestId);
+                API.showNotification('Solicitação rejeitada', 'success');
+                loadRequests();
+            } catch (error) {
+                API.showNotification(`Erro: ${error.message}`, 'error');
+            }
+        }
+
+        // Update badge
+        function updateBadge(badgeId, count) {
+            const badge = document.getElementById(badgeId);
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function capitalizeLeague(league) {
+            const names = {
+                bronze: 'Bronze',
+                silver: 'Prata',
+                gold: 'Ouro',
+                platinum: 'Platina',
+                diamond: 'Diamante'
+            };
+            return names[league] || league;
+        }
+
+        // Make functions global
+        window.searchUsers = searchUsers;
+        window.sendFriendRequest = sendFriendRequest;
+        window.removeFriend = removeFriend;
+        window.acceptRequest = acceptRequest;
+        window.rejectRequest = rejectRequest;
+
+        // Initial load
+        loadFriends();
+    </script>
+</body>
+
+</html>

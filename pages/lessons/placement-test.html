@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placement Test - English Games Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        .question-card {
+            background: var(--bg-glass);
+            padding: 2.5rem;
+            border-radius: var(--border-radius-lg);
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .option {
+            padding: 1.25rem;
+            background: var(--bg-glass);
+            border-radius: var(--border-radius-md);
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            border: 2px solid transparent;
+        }
+
+        .option:hover {
+            transform: translateX(8px);
+            border-color: var(--color-primary);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+        }
+
+        .option.selected {
+            border-color: var(--color-primary);
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .progress-bar-container {
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--gradient-primary);
+            transition: width 0.5s ease;
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin: 0.25rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="animated-bg">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
+    <nav class="nav-container">
+        <div class="nav-content">
+            <a href="../../index.html" class="nav-logo">🎮 Back to Hub</a>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <div class="theme-toggle-slider">🌙</div>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section class="section" style="padding-top: 3rem;">
+
+            <!-- Welcome Screen -->
+            <div id="welcomeScreen" class="glass-card"
+                style="padding: 3rem; max-width: 800px; margin: 0 auto; text-align: center;">
+                <div style="font-size: 5rem; margin-bottom: 1rem;">📝</div>
+                <h1
+                    style="font-size: 2.5rem; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 1rem;">
+                    English Placement Test
+                </h1>
+                <p style="font-size: 1.25rem; color: var(--text-secondary); margin-bottom: 2rem; line-height: 1.6;">
+                    Descubra seu nível de inglês! Este teste tem <strong>20 questões</strong> que vão do básico ao
+                    avançado.
+                    Ele avaliará seu vocabulário, gramática e compreensão.
+                </p>
+
+                <div
+                    style="background: rgba(16,185,129,0.1); padding: 1.5rem; border-radius: var(--border-radius-md); margin-bottom: 2rem; text-align: left;">
+                    <h3 style="color: var(--text-primary); margin-bottom: 1rem;">ℹ️ Como Funciona:</h3>
+                    <ul style="color: var(--text-secondary); line-height: 1.8;">
+                        <li>20 questões de múltipla escolha</li>
+                        <li>Perguntas progressivamente mais difíceis</li>
+                        <li>Avalia todos os níveis CEFR (A1 até C2)</li>
+                        <li>Leva aproximadamente 10-15 minutos</li>
+                        <li>Resultado imediato com recomendações personalizadas</li>
+                    </ul>
+                </div>
+
+                <button onclick="startTest()" class="btn btn-primary"
+                    style="font-size: 1.25rem; padding: 1rem 3rem; min-width: 250px;">
+                    Começar Teste →
+                </button>
+            </div>
+
+            <!-- Test Screen -->
+            <div id="testScreen" class="hidden">
+                <div class="glass-card" style="padding: 2rem; max-width: 900px; margin: 0 auto;">
+
+                    <!-- Progress -->
+                    <div style="margin-bottom: 2rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="color: var(--text-secondary); font-weight: 600;">
+                                Question <span id="currentQuestion">1</span> of <span id="totalQuestions">20</span>
+                            </span>
+                            <span style="color: var(--text-secondary); font-weight: 600;">
+                                Time: <span id="timer">00:00</span>
+                            </span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="progressBar" style="width: 5%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Question -->
+                    <div class="question-card">
+                        <h2 id="questionText"
+                            style="font-size: 1.5rem; color: var(--text-primary); margin-bottom: 2rem;">
+                            Loading question...
+                        </h2>
+
+                        <div id="optionsContainer">
+                            <!-- Options will be inserted here -->
+                        </div>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div style="display: flex; justify-content: space-between; gap: 1rem;">
+                        <button id="prevBtn" onclick="previousQuestion()" class="btn" style="min-width: 150px;"
+                            disabled>
+                            ← Anterior
+                        </button>
+                        <button id="nextBtn" onclick="nextQuestion()" class="btn btn-primary" style="min-width: 150px;"
+                            disabled>
+                            Próxima →
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result Screen -->
+            <div id="resultScreen" class="hidden">
+                <div class="glass-card" style="padding: 3rem; max-width: 800px; margin: 0 auto; text-align: center;">
+                    <div style="font-size: 5rem; margin-bottom: 1rem;">🎉</div>
+                    <h2 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--text-primary);">
+                        Teste Concluído!
+                    </h2>
+
+                    <!-- Result Details -->
+                    <div
+                        style="background: var(--gradient-primary); color: white; padding: 2rem; border-radius: var(--border-radius-lg); margin: 2rem 0;">
+                        <p style="font-size: 1rem; margin-bottom: 0.5rem; opacity: 0.9;">Seu Nível:</p>
+                        <h1 id="resultLevel" style="font-size: 4rem; margin: 0; font-weight: 800;">A1</h1>
+                        <p id="resultLevelName" style="font-size: 1.5rem; margin-top: 0.5rem; opacity: 0.95;">Beginner
+                        </p>
+                    </div>
+
+                    <!-- Score Details -->
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                        <div class="glass-card" style="padding: 1.5rem;">
+                            <div style="font-size: 2.5rem; font-weight: 800; color: var(--color-success);"
+                                id="scoreDisplay">0</div>
+                            <div style="color: var(--text-secondary);">Acertos</div>
+                        </div>
+                        <div class="glass-card" style="padding: 1.5rem;">
+                            <div style="font-size: 2.5rem; font-weight: 800; color: var(--color-primary);"
+                                id="percentageDisplay">0%</div>
+                            <div style="color: var(--text-secondary);">Precisão</div>
+                        </div>
+                        <div class="glass-card" style="padding: 1.5rem;">
+                            <div style="font-size: 2.5rem; font-weight: 800; color: var(--color-info);"
+                                id="timeDisplay">0:00</div>
+                            <div style="color: var(--text-secondary);">Tempo Total</div>
+                        </div>
+                    </div>
+
+                    <!-- Recommendation -->
+                    <div class="glass-card" style="padding: 2rem; text-align: left; margin-bottom: 2rem;">
+                        <h3 style="color: var(--text-primary); margin-bottom: 1rem;">📚 Recomendação:</h3>
+                        <p id="recommendation"
+                            style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem;">
+                            Loading recommendation...
+                        </p>
+                        <div id="suggestedThemes" style="margin-top: 1rem;">
+                            <!-- Suggested themes will be inserted here -->
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <button onclick="saveAndContinue()" class="btn btn-success" style="min-width: 200px;">
+                            Salvar Resultado →
+                        </button>
+                        <button onclick="retakeTest()" class="btn" style="min-width: 200px;">
+                            🔄 Refazer Teste
+                        </button>
+                        <button onclick="window.location.href='../../index.html'" class="btn" style="min-width: 200px;">
+                            🏠 Voltar ao Hub
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+    <script src="../../js/api.js"></script>
+    <script src="../../js/storage.js"></script>
+    <script src="../../js/lessons.js"></script>
+    <script>
+        // Fallback functions if external JS doesn't load
+        if (typeof ThemeManager === 'undefined') {
+            window.ThemeManager = {
+                init: () => { },
+                toggle: () => 'dark',
+                getCurrent: () => 'dark'
+            };
+        }
+        if (typeof SoundFX === 'undefined') {
+            window.SoundFX = {
+                init: () => { },
+                play: () => { }
+            };
+        }
+        if (typeof createConfetti === 'undefined') {
+            window.createConfetti = () => { };
+        }
+        if (typeof formatTime === 'undefined') {
+            window.formatTime = (seconds) => {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${mins}:${secs.toString().padStart(2, '0')}`;
+            };
+        }
+
+        // Placement Test Questions (20 questions, progressive difficulty)
+        const questions = [
+            // A1 Level (Questions 1-4)
+            { level: 'A1', category: 'grammar', skill: 'verb-to-be', question: 'Hello! My name ___ John.', options: ['is', 'am', 'are', 'be'], correct: 0 },
+            { level: 'A1', category: 'grammar', skill: 'verb-to-be', question: 'I ___ a student.', options: ['is', 'am', 'are', 'be'], correct: 1 },
+            { level: 'A1', category: 'grammar', skill: 'articles', question: 'What is this? It\'s ___ apple.', options: ['a', 'an', 'the', '-'], correct: 1 },
+            { level: 'A1', category: 'grammar', skill: 'present-simple', question: 'She ___ at home every day.', options: ['go', 'goes', 'going', 'to go'], correct: 1 },
+
+            // A2 Level (Questions 5-8)
+            { level: 'A2', category: 'grammar', skill: 'past-simple', question: 'I ___ to the cinema yesterday.', options: ['go', 'goes', 'went', 'going'], correct: 2 },
+            { level: 'A2', category: 'vocabulary', skill: 'quantifiers', question: 'There are ___ books on the table.', options: ['much', 'many', 'a lot', 'any'], correct: 1 },
+            { level: 'A2', category: 'grammar', skill: 'comparatives', question: 'She is ___ than her sister.', options: ['tall', 'taller', 'tallest', 'more tall'], correct: 1 },
+            { level: 'A2', category: 'grammar', skill: 'present-perfect', question: 'I ___ English for two years.', options: ['study', 'am studying', 'have studied', 'studied'], correct: 2 },
+
+            // B1 Level (Questions 9-12)
+            { level: 'B1', category: 'grammar', skill: 'conditionals', question: 'If I ___ rich, I would travel the world.', options: ['am', 'was', 'were', 'be'], correct: 2 },
+            { level: 'B1', category: 'grammar', skill: 'passive-voice', question: 'The project ___ by next Friday.', options: ['will finish', 'finishes', 'must be finished', 'finishing'], correct: 2 },
+            { level: 'B1', category: 'grammar', skill: 'modal-verbs', question: 'I wish I ___ speak French fluently.', options: ['can', 'could', 'will', 'would'], correct: 1 },
+            { level: 'B1', category: 'vocabulary', skill: 'verb-patterns', question: 'He suggested ___ to the museum.', options: ['to go', 'going', 'go', 'goes'], correct: 1 },
+
+            // B2 Level (Questions 13-16)
+            { level: 'B2', category: 'grammar', skill: 'future-perfect', question: 'By this time next year, I ___ my degree.', options: ['complete', 'will complete', 'will have completed', 'am completing'], correct: 2 },
+            { level: 'B2', category: 'grammar', skill: 'comparative-structures', question: 'The more you practice, ___ you become.', options: ['better', 'the better', 'best', 'the best'], correct: 1 },
+            { level: 'B2', category: 'grammar', skill: 'subjunctive', question: 'I would rather you ___ me the truth.', options: ['tell', 'told', 'telling', 'to tell'], correct: 1 },
+            { level: 'B2', category: 'vocabulary', skill: 'conjunctions', question: '___ the weather, we decided to go hiking.', options: ['Despite', 'Although', 'Even', 'However'], correct: 0 },
+
+            // C1 Level (Questions 17-18)
+            { level: 'C1', category: 'grammar', skill: 'perfect-conditionals', question: 'Had I known about the traffic, I ___ earlier.', options: ['would leave', 'would have left', 'will leave', 'left'], correct: 1 },
+            { level: 'C1', category: 'vocabulary', skill: 'collocations', question: 'The proposal was rejected on the ___ that it was too expensive.', options: ['basis', 'grounds', 'reasons', 'foundation'], correct: 1 },
+
+            // C2 Level (Questions 19-20)
+            { level: 'C2', category: 'vocabulary', skill: 'advanced-adjectives', question: 'Her speech was so ___ that everyone was moved to tears.', options: ['poignant', 'pointed', 'punctual', 'prominent'], correct: 0 },
+            { level: 'C2', category: 'grammar', skill: 'participles', question: '___ the circumstances, I believe we made the right decision.', options: ['Giving', 'Given', 'Give', 'Gives'], correct: 1 }
+        ];
+
+        let currentQuestionIndex = 0;
+        let answers = [];
+        let startTime;
+        let timerInterval;
+
+        // Initialize
+        ThemeManager.init();
+        SoundFX.init();
+
+        function toggleTheme() {
+            const newTheme = ThemeManager.toggle();
+            document.querySelector('.theme-toggle-slider').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            SoundFX.play('click');
+        }
+
+        // Start test
+        function startTest() {
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('testScreen').classList.remove('hidden');
+
+            currentQuestionIndex = 0;
+            answers = new Array(questions.length).fill(null);
+            startTime = Date.now();
+
+            startTimer();
+            loadQuestion();
+            SoundFX.play('success');
+        }
+
+        // Timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                document.getElementById('timer').textContent =
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // Load question
+        function loadQuestion() {
+            const question = questions[currentQuestionIndex];
+
+            document.getElementById('questionText').textContent =
+                `${currentQuestionIndex + 1}. ${question.question}`;
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('totalQuestions').textContent = questions.length;
+
+            // Update progress bar
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+
+            // Load options
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = question.options.map((option, index) => `
+                <div class="option ${answers[currentQuestionIndex] === index ? 'selected' : ''}" 
+                     onclick="selectOption(${index})">
+                    <strong>${String.fromCharCode(65 + index)}.</strong> ${option}
+                </div>
+            `).join('');
+
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+            document.getElementById('nextBtn').disabled = answers[currentQuestionIndex] === null;
+            document.getElementById('nextBtn').textContent =
+                currentQuestionIndex === questions.length - 1 ? 'Finalizar →' : 'Próxima →';
+        }
+
+        // Select option
+        function selectOption(index) {
+            answers[currentQuestionIndex] = index;
+            loadQuestion();
+            document.getElementById('nextBtn').disabled = false;
+            SoundFX.play('click');
+        }
+
+        // Navigation
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+                SoundFX.play('click');
+            } else {
+                finishTest();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+                SoundFX.play('click');
+            }
+        }
+
+        // Finish test
+        function finishTest() {
+            clearInterval(timerInterval);
+
+            // Calculate score and analyze performance
+            let correctAnswers = 0;
+            const performance = {
+                grammar: { correct: 0, total: 0 },
+                vocabulary: { correct: 0, total: 0 }
+            };
+
+            questions.forEach((question, index) => {
+                const isCorrect = answers[index] === question.correct;
+
+                // Track total score
+                if (isCorrect) correctAnswers++;
+
+                // Track category performance
+                if (question.category) {
+                    if (!performance[question.category]) {
+                        performance[question.category] = { correct: 0, total: 0 };
+                    }
+                    performance[question.category].total++;
+                    if (isCorrect) performance[question.category].correct++;
+                }
+            });
+
+            const percentage = Math.round((correctAnswers / questions.length) * 100);
+
+            // Determine level based on score
+            let determinedLevel, levelName, levelColor;
+            if (percentage >= 95) {
+                determinedLevel = 'C2';
+                levelName = 'Proficient';
+                levelColor = '#dc2626';
+            } else if (percentage >= 85) {
+                determinedLevel = 'C1';
+                levelName = 'Advanced';
+                levelColor = '#ef4444';
+            } else if (percentage >= 70) {
+                determinedLevel = 'B2';
+                levelName = 'Upper Intermediate';
+                levelColor = '#f59e0b';
+            } else if (percentage >= 50) {
+                determinedLevel = 'B1';
+                levelName = 'Intermediate';
+                levelColor = '#10b981';
+            } else if (percentage >= 25) {
+                determinedLevel = 'A2';
+                levelName = 'Elementary';
+                levelColor = '#3b82f6';
+            } else {
+                determinedLevel = 'A1';
+                levelName = 'Beginner';
+                levelColor = '#6366f1';
+            }
+
+            // Save result globally
+            window.placementTestResult = {
+                level: determinedLevel,
+                score: percentage,
+                details: performance
+            };
+
+            // Generate Detailed Feedback UI
+            const testScreen = document.getElementById('testScreen');
+            const resultScreen = document.getElementById('resultScreen');
+
+            testScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+
+            // 1. Build Result Card Header
+            let resultsHTML = `
+                <div class="result-card" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 20px; padding: 2rem; margin-bottom: 2rem; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div style="background: ${levelColor}; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; color: white; box-shadow: 0 4px 12px ${levelColor}80;">
+                                ${determinedLevel}
+                            </div>
+                            <div>
+                                <h2 style="margin: 0; font-size: 1.8rem; color: white;">Nível ${determinedLevel}</h2>
+                                <p style="margin: 0; opacity: 0.8; color: #cbd5e1;">${levelName}</p>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 2.5rem; font-weight: 800; color: white;">${percentage}%</div>
+                            <div style="color: #cbd5e1;">${correctAnswers}/${questions.length} Corretas</div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                        <!-- Strengths Section -->
+                        <div style="background: rgba(16, 185, 129, 0.1); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(16, 185, 129, 0.3);">
+                            <h3 style="color: #34d399; margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                                💪 Pontos Fortes
+                            </h3>
+                            <ul style="list-style: none; padding: 0; margin: 0; color: #e2e8f0;">
+                                ${generateStrengthsList(performance)}
+                            </ul>
+                        </div>
+
+                        <!-- Improvements Section -->
+                        <div style="background: rgba(245, 158, 11, 0.1); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(245, 158, 11, 0.3);">
+                            <h3 style="color: #fbbf24; margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                                📚 Áreas para Melhorar
+                            </h3>
+                            <ul style="list-style: none; padding: 0; margin: 0; color: #e2e8f0;">
+                                ${generateWeaknessesList(performance)}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Recommendations -->
+                    <div style="background: rgba(59, 130, 246, 0.1); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(59, 130, 246, 0.3); margin-top: 1rem;">
+                        <h3 style="color: #60a5fa; margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                            🎯 Recomendação Personalizada
+                        </h3>
+                        <p style="color: #e2e8f0; line-height: 1.6; margin-bottom: 0;">
+                            ${generateRecommendationText(determinedLevel, performance)}
+                        </p>
+                    </div>
+
+                    <!-- Reward Banner -->
+                    <!-- Reward Banner (Only if first time) -->
+                    <div id="rewardBanner"></div>`;
+
+            // Check if user already completed the test
+            const user = API.getStoredUser();
+            const hasCompleted = user && (user.placementTestCompleted || (user.profile && user.profile.placementTestCompleted));
+
+            if (!hasCompleted) {
+                resultsHTML = resultsHTML.replace('<div id="rewardBanner"></div>', `
+                    <div style="margin-top: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 1rem 2rem; display: flex; align-items: center; justify-content: center; gap: 1rem; color: white; font-weight: 600;">
+                        <span style="font-size: 1.5rem;">🎉</span>
+                        <span>Você ganhou 100 moedas por completar o teste!</span>
+                    </div>
+                `);
+            } else {
+                resultsHTML = resultsHTML.replace('<div id="rewardBanner"></div>', `
+                    <div style="margin-top: 2rem; background: rgba(255,255,255,0.1); border-radius: 12px; padding: 1rem 2rem; display: flex; align-items: center; justify-content: center; gap: 1rem; color: var(--text-secondary); font-weight: 500;">
+                        <span style="font-size: 1.5rem;">✅</span>
+                        <span>Resultado atualizado com sucesso!</span>
+                    </div>
+                `);
+            }
+
+            resultsHTML += `
+                </div>
+
+                <!-- Actions -->
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="saveAndContinue()" class="btn btn-success" style="min-width: 200px; padding: 12px 24px; font-size: 1.1rem;">
+                        💾 Salvar Resultado
+                    </button>
+                    <button onclick="retakeTest()" class="btn" style="min-width: 200px; background: rgba(255,255,255,0.1); color: white;">
+                        🔄 Refazer Teste
+                    </button>
+                </div>
+            `;
+
+            // Replace standard result content with new custom interactive UI
+            const resultContainer = resultScreen.querySelector('.glass-card');
+            if (resultContainer) {
+                resultScreen.innerHTML = `
+                    <div class="container" style="max-width: 800px; margin: 0 auto; padding: 2rem;">
+                        ${resultsHTML}
+                    </div>
+                 `;
+            } else {
+                resultScreen.innerHTML = `
+                    <div class="container" style="max-width: 800px; margin: 0 auto; padding: 2rem;">
+                         ${resultsHTML}
+                    </div>
+                 `;
+            }
+
+            SoundFX.play('success');
+            createConfetti();
+        }
+
+        // Helper functions for analysis
+        function generateStrengthsList(performance) {
+            let html = '';
+            for (const [category, data] of Object.entries(performance)) {
+                if (data.total > 0) {
+                    const percent = Math.round((data.correct / data.total) * 100);
+                    if (percent >= 70) {
+                        const catName = category.charAt(0).toUpperCase() + category.slice(1);
+                        html += `<li style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                            <span>✅</span> ${catName} (${percent}%)
+                        </li>`;
+                    }
+                }
+            }
+            if (html === '') html = '<li style="opacity: 0.8;">Continue praticando para desenvolver seus pontos fortes!</li>';
+            return html;
+        }
+
+        function generateWeaknessesList(performance) {
+            let html = '';
+            for (const [category, data] of Object.entries(performance)) {
+                if (data.total > 0) {
+                    const percent = Math.round((data.correct / data.total) * 100);
+                    if (percent < 70) {
+                        const catName = category.charAt(0).toUpperCase() + category.slice(1);
+                        html += `<li style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                            <span>📈</span> ${catName} (${percent}%)
+                        </li>`;
+                    }
+                }
+            }
+            if (html === '') html = '<li style="opacity: 0.8;">Ótimo trabalho! Você tem um desempenho equilibrado.</li>';
+            return html;
+        }
+
+        function generateRecommendationText(level, performance) {
+            const lowGrammar = (performance.grammar.correct / performance.grammar.total) < 0.7;
+            const lowVocab = (performance.vocabulary.correct / performance.vocabulary.total) < 0.7;
+
+            let text = `Com nível <strong>${level}</strong>, você já tem uma base. `;
+
+            if (lowGrammar && lowVocab) {
+                text += "Recomendamos focar em <strong>estruturas fundamentais</strong> e expandir seu vocabulário básico com exercícios diários.";
+            } else if (lowGrammar) {
+                text += "Seu vocabulário é bom! Tente focar mais na <strong>precisão gramatical</strong> para se expressar com mais clareza.";
+            } else if (lowVocab) {
+                text += "Sua gramática está sólida! Agora é hora de enriquecer seu inglês lendo mais textos e aprendendo <strong>novas expressões</strong>.";
+            } else {
+                text += "Você está indo muito bem! Desafie-se com conteúdos do próximo nível para continuar evoluindo.";
+            }
+
+            return text;
+        }
+
+        // Save and continue
+        async function saveAndContinue() {
+            if (window.placementTestResult) {
+                try {
+                    // Check if API client is available
+                    if (typeof API !== 'undefined' && API.isAuthenticated()) {
+                        // Use correct API method
+                        const response = await API.auth.submitPlacementTest(
+                            window.placementTestResult.level,
+                            window.placementTestResult.score,
+                            window.placementTestResult.details
+                        );
+
+                        if (response.success) {
+                            // Update local storage
+                            const user = JSON.parse(localStorage.getItem('user'));
+                            if (user) {
+                                user.placementTestCompleted = true;
+                                user.placementTestResult = {
+                                    level: window.placementTestResult.level,
+                                    score: window.placementTestResult.score
+                                };
+                                user.profile = user.profile || {};
+                                user.profile.coins = response.data.coins;
+                                localStorage.setItem('user', JSON.stringify(user));
+                            }
+
+                            SoundFX.play('success');
+
+                            // Show custom success modal instead of alert
+                            const successModal = document.createElement('div');
+                            successModal.style.cssText = `
+                                position: fixed;
+                                top: 0;
+                                left: 0;
+                                width: 100%;
+                                height: 100%;
+                                background: rgba(0,0,0,0.8);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                z-index: 10000;
+                                opacity: 0;
+                                transition: opacity 0.3s ease;
+                            `;
+
+                            successModal.innerHTML = `
+                                <div class="glass-card" style="padding: 3rem; text-align: center; max-width: 500px; transform: scale(0.9); transition: transform 0.3s ease;">
+                                    <div style="font-size: 5rem; margin-bottom: 1rem; animation: bounce 2s infinite;">🎉</div>
+                                    <h2 style="font-size: 2rem; margin-bottom: 2rem; color: var(--gradient-primary);">Parabéns!</h2>
+                                    
+                                    <div style="background: rgba(var(--background-secondary), 0.1); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid rgba(var(--background-secondary), 0.1);">
+                                        <p style="color: var(--text-secondary); margin-bottom: 0.5rem; font-size: 0.9rem;">Seu nível foi definido como:</p>
+                                        <h3 style="font-size: 2.5rem; color: var(--text-secondary); margin: 0;">${window.placementTestResult.level}</h3>
+                                        <p style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.5rem;">${response.message}</p>
+                                    </div>
+
+                                    <button onclick="window.location.href='../../index.html'" class="btn" style="background: var(--gradient-primary); width: 100%; padding: 1rem; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);">
+                                        Continuar para o Hub
+                                    </button>
+                                </div>
+                            `;
+
+                            document.body.appendChild(successModal);
+
+                            // Trigger animation
+                            requestAnimationFrame(() => {
+                                successModal.style.opacity = '1';
+                                successModal.querySelector('.glass-card').style.transform = 'scale(1)';
+                            });
+                        } else {
+                            throw new Error(response.message);
+                        }
+                    } else {
+                        // Fallback: save locally only
+                        UserProgress.setCurrentLesson('daily-routines', window.placementTestResult.level);
+                        const testResults = Storage.load('placementTestResults', []);
+                        testResults.push({
+                            ...window.placementTestResult,
+                            date: new Date().toISOString()
+                        });
+                        Storage.save('placementTestResults', testResults);
+
+                        SoundFX.play('success');
+                        alert(`Ótimo! Seu nível ${window.placementTestResult.level} foi salvo. Você será direcionado para a página principal.`);
+                        window.location.href = '../../index.html';
+                    }
+                } catch (error) {
+                    console.error('Error saving placement test:', error);
+                    alert('Erro ao salvar resultado. Tente novamente.');
+                }
+            }
+        }
+
+        // Retake test
+        function retakeTest() {
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+            SoundFX.play('click');
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Placement Test v2.1 Loaded');
+            const currentTheme = ThemeManager.getCurrent();
+            document.querySelector('.theme-toggle-slider').textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        });
+    </script>
+</body>
+
+</html>

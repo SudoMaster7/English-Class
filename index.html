@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
@@ -13,6 +13,9 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+
+    <!-- API Client (must load first) -->
+    <script src="js/api.js"></script>
 </head>
 
 <body>
@@ -28,14 +31,91 @@
     <nav class="nav-container">
         <div class="nav-content">
             <a href="#" class="nav-logo">🎮 English Games Hub</a>
+
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
             <div class="nav-links">
                 <a href="#games" class="nav-link active">🎯 Games</a>
                 <a href="#daily-lesson" class="nav-link">📚 Daily Lesson</a>
-                <a href="#stats" class="nav-link">📊 Stats</a>
-                <a href="#achievements" class="nav-link">🏆 Achievements</a>
+                <a href="pages/gamification/dashboard.html" class="nav-link protected-link">👤 Dashboard</a>
+                <a href="pages/gamification/leaderboard.html" class="nav-link protected-link">🏆 Rankings</a>
+                <a href="pages/gamification/shop.html" class="nav-link protected-link">🛒 Loja</a>
+                <a href="pages/gamification/friends.html" class="nav-link protected-link">👥 Amigos</a>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
                     <div class="theme-toggle-slider">🌙</div>
                 </button>
+                <!-- Auth button with dropdown -->
+                <div id="user-menu-container" style="position: relative; display: none;">
+                    <button id="auth-button" class="nav-link"
+                        style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600;"></button>
+
+                    <!-- Dropdown Menu -->
+                    <div id="user-dropdown"
+                        style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: white; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); min-width: 280px; z-index: 1000; overflow: hidden;">
+                        <!-- Profile Header -->
+                        <div
+                            style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 20px; color: white;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                <div id="dropdown-avatar"
+                                    style="width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; border: 2px solid rgba(255,255,255,0.5);">
+                                    👤</div>
+                                <div>
+                                    <div id="dropdown-name" style="font-weight: 700; font-size: 1.1rem;">Usuário</div>
+                                    <div id="dropdown-email" style="font-size: 0.85rem; opacity: 0.9;">email@example.com
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Quick Stats -->
+                            <div
+                                style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px;">
+                                <div
+                                    style="text-align: center; background: rgba(255,255,255,0.2); padding: 8px; border-radius: 8px;">
+                                    <div id="dropdown-level" style="font-size: 1.25rem; font-weight: 800;">1</div>
+                                    <div style="font-size: 0.7rem; opacity: 0.9;">Level</div>
+                                </div>
+                                <div
+                                    style="text-align: center; background: rgba(255,255,255,0.2); padding: 8px; border-radius: 8px;">
+                                    <div id="dropdown-xp" style="font-size: 1.25rem; font-weight: 800;">0</div>
+                                    <div style="font-size: 0.7rem; opacity: 0.9;">XP</div>
+                                </div>
+                                <div
+                                    style="text-align: center; background: rgba(255,255,255,0.2); padding: 8px; border-radius: 8px;">
+                                    <div id="dropdown-coins" style="font-size: 1.25rem; font-weight: 800;">0</div>
+                                    <div style="font-size: 0.7rem; opacity: 0.9;">💰 Moedas</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Menu Items -->
+                        <div style="padding: 8px;">
+                            <a href="pages/gamification/dashboard.html"
+                                style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; text-decoration: none; color: #374151; transition: background 0.2s; cursor: pointer;"
+                                onmouseover="this.style.background='#f3f4f6'"
+                                onmouseout="this.style.background='transparent'">
+                                <span style="font-size: 1.5rem;">👤</span>
+                                <div>
+                                    <div style="font-weight: 600;">Meu Dashboard</div>
+                                    <div style="font-size: 0.75rem; color: #6b7280;">Ver perfil completo</div>
+                                </div>
+                            </a>
+                            <div style="height: 1px; background: #e5e7eb; margin: 4px 8px;"></div>
+                            <button onclick="API.logout()"
+                                style="width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; text-decoration: none; color: #dc2626; border: none; background: transparent; cursor: pointer; transition: background 0.2s; text-align: left;"
+                                onmouseover="this.style.background='#fee2e2'"
+                                onmouseout="this.style.background='transparent'">
+                                <span style="font-size: 1.5rem;">🚪</span>
+                                <div>
+                                    <div style="font-weight: 600;">Sair</div>
+                                    <div style="font-size: 0.75rem; color: #ef4444;">Fazer logout</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
@@ -178,7 +258,7 @@
                         </p>
                     </div>
                     <div>
-                        <button onclick="window.location.href='placement-test.html'" class="btn"
+                        <button onclick="window.location.href='pages/lessons/placement-test.html'" class="btn"
                             style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-weight: 700; padding: 1rem 2rem; font-size: 1.1rem; min-width: 200px; white-space: nowrap;">
                             ✨ Fazer Teste
                         </button>
@@ -284,7 +364,7 @@
                         <h3 class="game-title">Daily Routines</h3>
                         <p class="game-description">Interactive lesson with quiz and activities</p>
                         <div style="margin-top: auto; padding-top: 1rem;">
-                            <span class="btn btn-success">Start Lesson</span>
+                            <span class="btn btn-primary">Start Lesson</span>
                         </div>
                     </div>
                 </div>
@@ -330,13 +410,213 @@
             SoundFX.play('click');
         }
 
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            const btn = document.querySelector('.mobile-menu-btn');
+            navLinks.classList.toggle('active');
+            btn.classList.toggle('active');
+            SoundFX.play('click');
+        }
+
         // Navigate to game
         function navigateToGame(gameName) {
             SoundFX.play('click');
             if (gameName === 'daily-lesson') {
-                window.location.href = 'daily-lesson.html';
+                window.location.href = 'pages/lessons/daily-lesson.html';
             } else {
                 window.location.href = `games/${gameName}.html`;
+            }
+        }
+
+        // ========================================
+        // Auth Integration
+        // ========================================
+        const authButton = document.getElementById('auth-button');
+        const userMenuContainer = document.getElementById('user-menu-container');
+        const userDropdown = document.getElementById('user-dropdown');
+
+        // Custom notification for placement test
+        function showPlacementNotification() {
+            // Create notification banner
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                max-width: 400px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 20px 24px;
+                border-radius: 12px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                z-index: 10000;
+                animation: slideIn 0.5s ease-out;
+            `;
+
+            notification.innerHTML = `
+                <style>
+                    @keyframes slideIn {
+                        from { transform: translateX(120%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(120%); opacity: 0; }
+                    }
+                </style>
+                <div style="display: flex; align-items: start; gap: 16px;">
+                    <div style="font-size: 32px; line-height: 1;">🎯</div>
+                    <div style="flex: 1;">
+                        <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 700;">Complete o Teste de Nivelamento!</h3>
+                        <p style="margin: 0 0 16px 0; opacity: 0.95; font-size: 14px; line-height: 1.5;">
+                            Descubra seu nível de inglês e ganhe <strong>100 moedas</strong> 💰
+                        </p>
+                        <div style="display: flex; gap: 12px;">
+                            <button onclick="window.location.href='pages/lessons/placement-test.html'" 
+                                style="padding: 10px 20px; background: white; color: #667eea; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">
+                                Fazer Agora
+                            </button>
+                            <button id="dismissNotification"
+                                style="padding: 10px 20px; background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">
+                                Mais Tarde
+                            </button>
+                        </div>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                        style="background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 0; line-height: 1; opacity: 0.7;">
+                        ×
+                    </button>
+                </div>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Dismiss button
+            notification.querySelector('#dismissNotification').onclick = () => {
+                notification.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => notification.remove(), 300);
+            };
+
+            // Auto-dismiss after 15 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.style.animation = 'slideOut 0.3s ease-in';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, 15000);
+        }
+
+        // Initialize auth UI
+        async function initAuth() {
+            if (API && API.isAuthenticated()) {
+                try {
+                    // Fetch fresh user data from backend
+                    const response = await API.auth.getCurrentUser();
+
+                    if (response.success && response.data.user) {
+                        const user = response.data.user;
+
+                        // Update localStorage with fresh data
+                        localStorage.setItem('user', JSON.stringify(user));
+
+                        // Show user menu container
+                        userMenuContainer.style.display = 'block';
+                        authButton.textContent = `👤 ${user.name}`;
+
+                        // Populate dropdown with user data
+                        const profile = user.profile || {};
+                        const avatar = (user.avatar && !user.avatar.startsWith('http')) ? user.avatar : '👤';
+                        document.getElementById('dropdown-avatar').textContent = avatar;
+                        document.getElementById('dropdown-name').textContent = user.name;
+                        document.getElementById('dropdown-email').textContent = user.email;
+                        document.getElementById('dropdown-level').textContent = profile.level || 1;
+                        document.getElementById('dropdown-xp').textContent = (profile.xp || 0).toLocaleString('pt-BR');
+                        document.getElementById('dropdown-coins').textContent = (profile.coins || 0).toLocaleString('pt-BR');
+
+                        // Toggle dropdown on button click
+                        authButton.onclick = async (e) => {
+                            e.stopPropagation();
+                            const isVisible = userDropdown.style.display === 'block';
+                            if (!isVisible) {
+                                // Refresh user data before showing
+                                await refreshUserData();
+                            }
+                            userDropdown.style.display = isVisible ? 'none' : 'block';
+                            SoundFX.play('click');
+                        };
+
+                        // Check placement test completion (only show once per session)
+                        const placementAlertShown = sessionStorage.getItem('placementAlertShown');
+                        if (!user.placementTestCompleted && !placementAlertShown) {
+                            // Show custom notification instead of browser alert
+                            setTimeout(() => {
+                                showPlacementNotification();
+                                sessionStorage.setItem('placementAlertShown', 'true');
+                            }, 1500);
+                        }
+
+                        // Show user stats if available
+                        if (profile.xp !== undefined) {
+                            API.showNotification(`Bem-vindo de volta, ${user.name}! 🎉`, 'success');
+                            // Update stats with backend data
+                            document.getElementById('totalGames').textContent = user.level || 1;
+                            document.getElementById('totalScore').textContent = user.xp || 0;
+
+                            // Update level widget with backend profile data
+                            updateLevelProgress(profile);
+                        }
+                    } else {
+                        // Failed to get user data, logout
+                        API.logout();
+                    }
+                } catch (error) {
+                    console.error('Error initializing auth:', error);
+                    // Continue without user data or logout on auth error
+                    API.logout();
+                }
+            } else {
+                // Not authenticated - show login button
+                authButton.textContent = '🔐 Entrar';
+                authButton.onclick = () => {
+                    window.location.href = 'pages/auth/login.html';
+                };
+                userMenuContainer.style.display = 'block';
+            }
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (userDropdown && !userMenuContainer.contains(e.target)) {
+                userDropdown.style.display = 'none';
+            }
+        });
+
+        // Initialize on load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initAuth);
+        } else {
+            initAuth();
+        }
+
+        // Refresh user data from backend
+        async function refreshUserData() {
+            try {
+                const response = await API.auth.getCurrentUser();
+                if (response.success && response.data.user) {
+                    const user = response.data.user;
+                    const profile = user.profile || {};
+
+                    // Update dropdown
+                    document.getElementById('dropdown-level').textContent = profile.level || 1;
+                    document.getElementById('dropdown-xp').textContent = (profile.xp || 0).toLocaleString('pt-BR');
+                    document.getElementById('dropdown-coins').textContent = (profile.coins || 0).toLocaleString('pt-BR');
+
+                    // Update localStorage
+                    localStorage.setItem('user', JSON.stringify(user));
+                }
+            } catch (error) {
+                console.error('Error refreshing user data:', error);
             }
         }
 
@@ -359,27 +639,55 @@
             updateLevelProgress(stats);
         }
         // Update level progress widget
-        function updateLevelProgress(stats) {
-            // Calculate total XP (1 XP per 10 points scored)
-            const totalXP = Math.floor(stats.totalScore / 10);
+        function updateLevelProgress(statsOrProfile) {
+            let level, currentLevelXP, nextLevelXP, xpToNext, percentage, totalXP;
 
-            // Calculate level (every 100 XP = 1 level, starting at level 1)
-            const level = Math.floor(totalXP / 100) + 1;
-            const currentLevelXP = totalXP % 100;
-            const nextLevelXP = 100;
-            const xpToNext = nextLevelXP - currentLevelXP;
-            const percentage = Math.round((currentLevelXP / nextLevelXP) * 100);
+            // Check if we received a backend profile or local stats
+            if (statsOrProfile.level !== undefined && statsOrProfile.xp !== undefined) {
+                // It's a backend profile
+                level = statsOrProfile.level;
+                totalXP = statsOrProfile.xp;
+
+                // Calculate progress within current level (assuming 100 XP per level for consistency, 
+                // or use the backend logic if it differs. Model says 100 XP per level).
+                currentLevelXP = totalXP % 100;
+                nextLevelXP = 100;
+                xpToNext = nextLevelXP - currentLevelXP;
+                percentage = Math.round((currentLevelXP / nextLevelXP) * 100);
+            } else {
+                // It's local stats (fallback)
+                // Calculate total XP (1 XP per 10 points scored)
+                totalXP = Math.floor((statsOrProfile.totalScore || 0) / 10);
+
+                // Calculate level (every 100 XP = 1 level, starting at level 1)
+                level = Math.floor(totalXP / 100) + 1;
+                currentLevelXP = totalXP % 100;
+                nextLevelXP = 100;
+                xpToNext = nextLevelXP - currentLevelXP;
+                percentage = Math.round((currentLevelXP / nextLevelXP) * 100);
+            }
 
             // Update display
-            document.getElementById('currentLevelNumber').textContent = level;
-            document.getElementById('levelDisplay').textContent = level;
-            document.getElementById('totalXP').textContent = totalXP;
-            document.getElementById('currentXP').textContent = currentLevelXP;
-            document.getElementById('nextLevelXP').textContent = nextLevelXP;
-            document.getElementById('xpPercentage').textContent = percentage;
-            document.getElementById('xpProgressBar').style.width = percentage + '%';
-            document.getElementById('xpToNext').textContent = xpToNext;
-            document.getElementById('nextLevel').textContent = level + 1;
+            const levelNumEl = document.getElementById('currentLevelNumber');
+            const levelDisplayEl = document.getElementById('levelDisplay');
+            const totalXPEl = document.getElementById('totalXP');
+            const currentXPEl = document.getElementById('currentXP');
+            const nextLevelXPEl = document.getElementById('nextLevelXP');
+            const xpPercentageEl = document.getElementById('xpPercentage');
+            const xpBarEl = document.getElementById('xpProgressBar');
+            const xpToNextEl = document.getElementById('xpToNext');
+            const nextLevelEl = document.getElementById('nextLevel');
+
+            if (levelNumEl) levelNumEl.textContent = level;
+            if (levelDisplayEl) levelDisplayEl.textContent = level;
+            // Use toLocaleString for Total XP if possible
+            if (totalXPEl) totalXPEl.textContent = totalXP.toLocaleString('pt-BR');
+            if (currentXPEl) currentXPEl.textContent = currentLevelXP;
+            if (nextLevelXPEl) nextLevelXPEl.textContent = nextLevelXP;
+            if (xpPercentageEl) xpPercentageEl.textContent = percentage;
+            if (xpBarEl) xpBarEl.style.width = percentage + '%';
+            if (xpToNextEl) xpToNextEl.textContent = xpToNext;
+            if (nextLevelEl) nextLevelEl.textContent = level + 1;
         }
 
         // Load achievements
@@ -432,6 +740,19 @@
             loadLessons(); // Initialize lesson system
             const currentTheme = ThemeManager.getCurrent();
             document.querySelector('.theme-toggle-slider').textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+
+            // Protected links handler
+            document.querySelectorAll('.protected-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    if (!API.isAuthenticated()) {
+                        e.preventDefault();
+                        API.showNotification('Faça login para acessar esta área! 🔐', 'info');
+                        setTimeout(() => {
+                            window.location.href = 'pages/auth/login.html';
+                        }, 1000);
+                    }
+                });
+            });
         });
     </script>
 </body>

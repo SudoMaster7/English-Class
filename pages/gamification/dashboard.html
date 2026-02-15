@@ -1,0 +1,523 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - English Learning Platform</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 24px;
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Profile Card */
+        .profile-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .profile-info h2 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .action-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+
+        .action-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .action-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+
+        .action-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .action-description {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+
+        /* Placement Test Banner */
+        .placement-banner {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .banner-icon {
+            font-size: 4rem;
+        }
+
+        .banner-content {
+            flex: 1;
+        }
+
+        .banner-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .banner-text {
+            opacity: 0.9;
+        }
+
+        .banner-btn {
+            background: white;
+            color: #d97706;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            white-space: nowrap;
+        }
+
+        .banner-btn:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+                margin-bottom: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .btn {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+
+            .profile-card {
+                padding: 20px;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 2.5rem;
+            }
+
+            .profile-stats {
+                grid-template-columns: 1fr 1fr;
+                /* 2 columns for stats */
+                gap: 12px;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .placement-banner {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+
+            .banner-icon {
+                font-size: 3rem;
+                margin-bottom: 10px;
+            }
+
+            .banner-btn {
+                width: 100%;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+                /* Stack quick actions */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👋 Dashboard</h1>
+            <div class="header-actions">
+                <a href="../../index.html" class="btn">← Voltar</a>
+                <button onclick="logout()" class="btn">Sair</button>
+            </div>
+        </div>
+
+        <!-- English Level Display Card -->
+        <div id="levelCard" class="placement-banner"
+            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="banner-icon">🎯</div>
+            <div class="banner-content">
+                <h3 id="userLevelTitle" class="banner-title">Seu Nível de Inglês</h3>
+                <p id="userLevelSubtitle" class="banner-text">Faça o teste de nivelamento para descobrir</p>
+            </div>
+            <button id="levelActionBtn" class="banner-btn"
+                onclick="window.location.href='../lessons/placement-test.html'">
+                Fazer Teste
+            </button>
+        </div>
+
+        <!-- Profile Card -->
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar" id="userAvatar">👤</div>
+                <div class="profile-info">
+                    <h2 id="userName">Carregando...</h2>
+                    <div id="userEmail" style="opacity: 0.8;"></div>
+                    <div id="userLevel"
+                        style="margin-top: 12px; display: inline-block; background: rgba(255,255,255,0.2); padding: 6px 16px; border-radius: 20px; font-weight: 600;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="statLevel">0</div>
+                    <div class="stat-label">Nível</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statXP">0</div>
+                    <div class="stat-label">XP Total</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statCoins">0</div>
+                    <div class="stat-label">💰 Moedas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statStreak">0</div>
+                    <div class="stat-label">🔥 Sequência</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statLeague">Bronze</div>
+                    <div class="stat-label">Liga</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <h3 style="margin-bottom: 20px; font-size: 1.75rem;">Acesso Rápido</h3>
+        <div class="quick-actions">
+            <a href="leaderboard.html" class="action-card">
+                <div class="action-icon">🏆</div>
+                <div class="action-title">Rankings</div>
+                <div class="action-description">Veja sua posição nos rankings globais</div>
+            </a>
+
+            <a href="shop.html" class="action-card">
+                <div class="action-icon">🛒</div>
+                <div class="action-title">Loja</div>
+                <div class="action-description">Compre boosts e itens especiais</div>
+            </a>
+
+            <a href="friends.html" class="action-card">
+                <div class="action-icon">👥</div>
+                <div class="action-title">Amigos</div>
+                <div class="action-description">Adicione amigos e compete com eles</div>
+            </a>
+
+            <a href="../../index.html#games" class="action-card">
+                <div class="action-icon">🎮</div>
+                <div class="action-title">Jogos</div>
+                <div class="action-description">Pratique com jogos divertidos</div>
+            </a>
+
+            <a href="../../index.html#lessons" class="action-card">
+                <div class="action-icon">📚</div>
+                <div class="action-title">Lições</div>
+                <div class="action-description">Continue suas lições temáticas</div>
+            </a>
+
+            <a href="../lessons/placement-test.html" class="action-card">
+                <div class="action-icon">📝</div>
+                <div class="action-title">Teste de Nivelamento</div>
+                <div class="action-description">Descubra ou atualize seu nível</div>
+            </a>
+        </div>
+    </div>
+
+    <script src="../../js/api.js"></script>
+    <script>
+        // Check authentication
+        if (!API.isAuthenticated()) {
+            window.location.href = '../auth/login.html';
+        }
+
+        // Loading state to prevent concurrent requests
+        let isLoadingData = false;
+
+        // Load user data
+        async function loadUserData() {
+            if (isLoadingData) return; // Prevent concurrent calls
+
+            isLoadingData = true;
+            try {
+                const response = await API.auth.getCurrentUser();
+
+                if (response.success && response.data.user) {
+                    const user = response.data.user;
+
+                    // Update profile header
+                    document.getElementById('userName').textContent = user.name;
+                    document.getElementById('userEmail').textContent = user.email;
+
+                    // Set avatar (emoji or default)
+                    const avatar = (user.avatar && !user.avatar.startsWith('http')) ? user.avatar : '👤';
+                    document.getElementById('userAvatar').textContent = avatar;
+
+                    // Update stats
+                    const profile = user.profile || {};
+                    document.getElementById('statLevel').textContent = profile.level || 1;
+                    document.getElementById('statXP').textContent = (profile.xp || 0).toLocaleString('pt-BR');
+                    document.getElementById('statCoins').textContent = (profile.coins || 0).toLocaleString('pt-BR');
+                    document.getElementById('statStreak').textContent = profile.streak || 0;
+
+                    // Update league
+                    const leagueNames = {
+                        bronze: 'Bronze',
+                        silver: 'Prata',
+                        gold: 'Ouro',
+                        platinum: 'Platina',
+                        diamond: 'Diamante'
+                    };
+                    document.getElementById('statLeague').textContent = leagueNames[profile.league] || 'Bronze';
+
+                    // Update level card based on test completion
+                    // Update Level Card (if exists)
+                    const levelCard = document.getElementById('levelCard');
+                    const levelTitle = document.getElementById('userLevelTitle');
+                    const levelSubtitle = document.getElementById('userLevelSubtitle');
+                    const levelBtn = document.getElementById('levelActionBtn');
+
+                    // DEBUG: Log user data to understand the issue
+                    console.log('🔍 DEBUG - Placement Test Data:', {
+                        placementTestCompleted: user.placementTestCompleted,
+                        placementTestResult: user.placementTestResult,
+                        hasLevel: user.placementTestResult?.level
+                    });
+
+                    if (levelCard && levelTitle && levelSubtitle && levelBtn) {
+                        if (user.placementTestCompleted && user.placementTestResult && user.placementTestResult.level) {
+                            // Test completed - show level prominently
+                            console.log('✅ Test completed - showing level:', user.placementTestResult.level);
+
+                            // Change card style to reflect completion
+                            levelCard.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+
+                            // Update UI
+                            levelTitle.textContent = `Nível ${user.placementTestResult.level}`;
+                            levelSubtitle.innerHTML = `
+                                <div style="font-size: 1.1rem; margin-top: 4px;">
+                                    Parabéns! Você completou o teste.
+                                </div>
+                                <div style="font-size: 0.9rem; opacity: 0.9; margin-top: 4px;">
+                                    ${new Date(user.placementTestResult.completedAt || Date.now()).toLocaleDateString('pt-BR')}
+                                </div>
+                            `;
+
+                            // Remove the "Take Test" button and replace with small retake text or button
+                            levelBtn.textContent = 'Ver Detalhes';
+                            levelBtn.onclick = () => {
+                                window.location.href = '../lessons/level-details.html';
+                            };
+                            levelBtn.style.background = 'rgba(255,255,255,0.2)';
+                            levelBtn.style.color = 'white';
+
+                            const userLevelEl = document.getElementById('userLevel');
+                            if (userLevelEl) userLevelEl.textContent = `Nível: ${user.placementTestResult.level}`;
+                        } else {
+                            // Test not completed - show prompt
+                            console.log('❌ Test NOT completed - showing prompt');
+                            levelCard.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                            levelTitle.textContent = 'Seu Nível de Inglês';
+                            levelSubtitle.textContent = '🎁 Complete o teste e ganhe 100 moedas!';
+                            levelBtn.textContent = 'Fazer Teste Agora';
+                            levelBtn.onclick = () => window.location.href = '../lessons/placement-test.html';
+                            levelBtn.style.background = 'white';
+                            levelBtn.style.color = '#667eea';
+                            const userLevelEl = document.getElementById('userLevel');
+                            if (userLevelEl) userLevelEl.textContent = 'Nível não definido';
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                API.showNotification('Erro ao carregar dados do usuário', 'error');
+            } finally {
+                isLoadingData = false; // Always reset loading flag
+            }
+        }
+
+        function logout() {
+            if (confirm('Deseja realmente sair?')) {
+                API.logout();
+            }
+        }
+
+        // Load data on page load
+        loadUserData();
+
+        // Auto-refresh every 30 seconds (instead of 5 to avoid rate limiting)
+        setInterval(() => {
+            if (!isLoadingData) {
+                loadUserData();
+            }
+        }, 30000); // 30 seconds
+
+        // Refresh when user returns to tab
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && !isLoadingData) {
+                loadUserData();
+            }
+        });
+    </script>
+</body>
+
+</html>
+```
